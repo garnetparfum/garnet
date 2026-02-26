@@ -1,0 +1,470 @@
+:root{
+  --wine:#7a0c2e;
+  --wine2:#a0123d;
+  --bg:#ffffff;
+  --text:#141414;
+  --muted:#5a5a5a;
+  --line:rgba(122,12,46,.18);
+  --shadow:0 18px 60px rgba(0,0,0,.10);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  background:var(--bg);
+  color:var(--text);
+  overflow-x:hidden;
+}
+
+.bg{position:fixed; inset:0; z-index:-1}
+.bgBlob{
+  position:absolute; width:560px; height:560px; border-radius:50%;
+  filter: blur(30px);
+  opacity:.28;
+}
+.bgBlob.one{left:-160px; top:-180px; background:var(--wine)}
+.bgBlob.two{right:-180px; top:30px; background:var(--wine2)}
+.bgMist{
+  position:absolute; inset:0;
+  background:
+    radial-gradient(1000px 420px at 20% 20%, rgba(122,12,46,.10), transparent 60%),
+    radial-gradient(900px 420px at 80% 25%, rgba(160,18,61,.10), transparent 60%),
+    radial-gradient(900px 500px at 60% 90%, rgba(122,12,46,.08), transparent 62%);
+}
+
+.wrap{max-width:1180px; margin:0 auto; padding:28px 18px 44px}
+
+.nav{
+  position:sticky; top:0; z-index:10;
+  display:flex; align-items:center; justify-content:space-between;
+  gap:16px;
+  padding:14px 18px;
+  background:rgba(255,255,255,.78);
+  backdrop-filter: blur(10px);
+  border-bottom:1px solid rgba(0,0,0,.06);
+}
+
+.logo{display:flex; align-items:center; gap:12px}
+.logoMark{
+  width:38px; height:38px; border-radius:14px;
+  background:linear-gradient(180deg, var(--wine2), var(--wine));
+  box-shadow:0 14px 30px rgba(122,12,46,.22);
+}
+.logoImg{
+  width:42px;
+  height:42px;
+  object-fit:contain;
+}
+.logoName{font-weight:1000; letter-spacing:.3px}
+.logoSub{font-size:12px; color:var(--muted); margin-top:2px}
+
+.navMid{display:flex; gap:16px; flex-wrap:wrap}
+.navMid a{
+  text-decoration:none;
+  color:#222;
+  font-weight:800;
+  padding:8px 10px;
+  border-radius:12px;
+}
+.navMid a:hover{background:rgba(122,12,46,.08); color:var(--wine)}
+
+.navRight{display:flex; gap:10px; flex-wrap:wrap}
+
+.btn{
+  padding:12px 14px;
+  border-radius:14px;
+  border:1px solid rgba(0,0,0,.12);
+  background:#fff;
+  cursor:pointer;
+  font-weight:1000;
+}
+.btn.primary{
+  background:linear-gradient(180deg, var(--wine2), var(--wine));
+  color:#fff;
+  border-color:rgba(122,12,46,.55);
+  box-shadow:0 16px 34px rgba(122,12,46,.18);
+}
+.btn.ghost{
+  background:rgba(255,255,255,.65);
+  border-color:rgba(122,12,46,.20);
+  color:var(--wine);
+}
+
+.hero{
+  display:grid;
+  grid-template-columns: 1.1fr .9fr;
+  gap:18px;
+  align-items:center;
+  padding:26px 0 10px;
+}
+.badge{
+  display:inline-flex;
+  padding:7px 11px;
+  border-radius:999px;
+  border:1px solid rgba(122,12,46,.25);
+  background:rgba(122,12,46,.07);
+  color:var(--wine);
+  font-weight:1000;
+  font-size:12px;
+}
+.hero h1{font-size:46px; line-height:1.05; margin:12px 0 10px}
+.hero h1 span{color:var(--wine)}
+.hero p{color:var(--muted); max-width:620px; line-height:1.6}
+.heroActions{display:flex; gap:12px; margin:16px 0 12px; flex-wrap:wrap}
+
+/* seçim bloku */
+.genderPick{
+  margin-top:16px;
+  background:rgba(255,255,255,.82);
+  border:1px solid rgba(0,0,0,.08);
+  border-radius:18px;
+  padding:12px;
+  width:fit-content;
+  min-width:340px;
+  box-shadow:0 10px 30px rgba(0,0,0,.05);
+}
+.genderTitle{font-weight:1000; color:var(--wine); margin-bottom:8px;}
+.genderBtns{display:flex; gap:10px; flex-wrap:wrap;}
+.gbtn{
+  padding:10px 14px;
+  border-radius:14px;
+  border:1px solid rgba(122,12,46,.18);
+  background:#fff;
+  cursor:pointer;
+  font-weight:1000;
+  transition:.15s ease;
+}
+.gbtn:hover{transform:translateY(-1px); box-shadow:0 12px 26px rgba(122,12,46,.10);}
+.gbtn.active{background:rgba(122,12,46,.10); border-color:rgba(122,12,46,.45); color:var(--wine);}
+.genderHint{margin-top:8px; font-size:12px; color:#666; line-height:1.4;}
+
+.heroImage{display:flex; justify-content:center}
+.frame{
+  width:min(420px, 92vw);
+  background:rgba(255,255,255,.80);
+  border:1px solid rgba(122,12,46,.22);
+  border-radius:26px;
+  padding:14px;
+  box-shadow:var(--shadow);
+  position:relative;
+}
+.frame img{
+  width:100%;
+  height:470px;
+  object-fit:cover;
+  border-radius:20px;
+  border:1px solid rgba(0,0,0,.08);
+}
+.shine{
+  position:absolute; inset:12px;
+  border-radius:22px;
+  box-shadow:0 0 0 1px rgba(122,12,46,.18), 0 0 60px rgba(122,12,46,.12);
+  pointer-events:none;
+}
+
+.catalog{margin-top:24px}
+.catalogTop{
+  display:flex; align-items:flex-end; justify-content:space-between;
+  gap:14px; flex-wrap:wrap;
+}
+.catalog h2{margin:0; font-size:26px}
+.sub{margin-top:6px; font-size:13px; color:var(--muted)}
+
+.search input{
+  width:min(420px, 92vw);
+  padding:12px 14px;
+  border-radius:14px;
+  border:1px solid rgba(0,0,0,.12);
+  background:rgba(255,255,255,.75);
+  outline:none;
+}
+.search input:focus{
+  border-color:rgba(122,12,46,.45);
+  box-shadow:0 0 0 4px rgba(122,12,46,.10);
+}
+
+.chips{display:flex; gap:10px; margin:14px 0; flex-wrap:wrap}
+.chip{
+  padding:9px 12px;
+  border-radius:999px;
+  border:1px solid rgba(122,12,46,.18);
+  background:rgba(255,255,255,.72);
+  cursor:pointer;
+  font-weight:1000;
+}
+.chip.active{
+  background:rgba(122,12,46,.10);
+  border-color:rgba(122,12,46,.45);
+  color:var(--wine);
+}
+
+.grid{
+  display:grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap:14px;
+}
+
+.card{
+  background:rgba(255,255,255,.86);
+  border:1px solid var(--line);
+  border-radius:18px;
+  overflow:hidden;
+  box-shadow:0 14px 44px rgba(0,0,0,.07);
+  transition:.15s ease;
+}
+.card:hover{
+  transform:translateY(-3px);
+  box-shadow:0 18px 58px rgba(0,0,0,.10);
+  border-color:rgba(122,12,46,.35);
+}
+.cTop{position:relative}
+.cTop img{width:100%; height:170px; object-fit:cover; display:block}
+.priceBadge{
+  position:absolute;
+  bottom:10px;
+  right:10px;
+  background:rgba(255,255,255,.92);
+  border:1px solid rgba(0,0,0,.10);
+  padding:6px 10px;
+  border-radius:999px;
+  font-weight:1000;
+  backdrop-filter: blur(4px);
+}
+.catBadge{
+  position:absolute; bottom:10px; left:10px;
+  background:rgba(122,12,46,.92);
+  color:#fff;
+  padding:6px 10px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:1000;
+}
+
+.cBody{padding:12px 12px 14px; display:flex; flex-direction:column; gap:8px; min-height:138px}
+.cName{font-weight:1000}
+.cNotes{font-size:12px; color:var(--muted); line-height:1.35; min-height:34px}
+.cBtns{display:flex; gap:10px; margin-top:auto}
+.sbtn{
+  width:100%;
+  padding:10px 10px;
+  border-radius:14px;
+  border:1px solid rgba(122,12,46,.18);
+  background:#fff;
+  cursor:pointer;
+  font-weight:1000;
+}
+.sbtn.primary{background:rgba(122,12,46,.10); color:var(--wine)}
+
+.about,.contact{margin-top:18px}
+.aboutBox,.contactBox{
+  background:rgba(255,255,255,.82);
+  border:1px solid rgba(0,0,0,.08);
+  border-radius:22px;
+  padding:16px;
+  box-shadow:0 14px 44px rgba(0,0,0,.06);
+}
+.aboutBox h3,.contactBox h3{margin:0 0 8px}
+.aboutBox p,.contactBox p{margin:0 0 12px; color:var(--muted); line-height:1.6}
+
+.footer{
+  margin-top:26px;
+  padding-top:16px;
+  border-top:1px solid rgba(0,0,0,.08);
+  display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;
+  color:var(--muted); font-size:12px;
+}
+
+/* Modal */
+.modalBack{
+  position:fixed; inset:0; z-index:50;
+  background:rgba(0,0,0,.45);
+  display:none; align-items:center; justify-content:center;
+  padding:18px;
+}
+.modalBack.show{display:flex}
+.modal{
+  width:min(980px, 96vw);
+  background:#fff;
+  border-radius:22px;
+  box-shadow:0 25px 90px rgba(0,0,0,.30);
+  position:relative;
+  overflow:hidden;
+}
+.x{
+  position:absolute; top:12px; right:12px;
+  width:44px; height:44px;
+  border-radius:14px;
+  border:1px solid rgba(0,0,0,.12);
+  background:#fff;
+  cursor:pointer;
+  font-weight:1000;
+}
+.modalGrid{display:grid; grid-template-columns: 1fr 1.05fr}
+.mLeft{padding:16px; background:radial-gradient(700px 360px at 50% 30%, rgba(122,12,46,.10), transparent 60%)}
+.mLeft img{width:100%; height:520px; object-fit:cover; border-radius:18px; border:1px solid rgba(0,0,0,.08)}
+.mRight{padding:18px}
+.tagRow{display:flex; gap:8px; flex-wrap:wrap}
+.tag{
+  padding:7px 10px;
+  border-radius:999px;
+  background:rgba(122,12,46,.10);
+  border:1px solid rgba(122,12,46,.25);
+  color:var(--wine);
+  font-weight:1000;
+  font-size:12px;
+}
+.tag.outline{background:transparent; border-color:rgba(0,0,0,.12); color:#333}
+.mRight h3{margin:12px 0 6px; font-size:26px}
+.notes{color:var(--muted); font-size:13px; margin-bottom:10px}
+.desc{color:#333; line-height:1.6}
+.priceRow{display:flex; justify-content:space-between; align-items:flex-end; gap:10px; margin-top:14px}
+.price{font-size:26px; font-weight:1100; color:var(--wine)}
+.hint{font-size:12px; color:var(--muted)}
+.mBtns{display:flex; gap:10px; margin-top:14px; flex-wrap:wrap}
+
+/* modal seçimləri */
+.optBlock{ margin-top:14px; }
+.optTitle{ font-weight:1000; color:var(--wine); margin-bottom:8px; }
+.optRow{ display:flex; gap:10px; flex-wrap:wrap; }
+.optBtn{
+  padding:10px 12px;
+  border-radius:14px;
+  border:1px solid rgba(122,12,46,.18);
+  background:#fff;
+  cursor:pointer;
+  font-weight:1000;
+  transition:.15s ease;
+}
+.optBtn:hover{transform:translateY(-1px); box-shadow:0 12px 26px rgba(122,12,46,.10);}
+.optBtn.active{background:rgba(122,12,46,.10); border-color:rgba(122,12,46,.45); color:var(--wine);}
+.hidden{ display:none; }
+
+@media (max-width: 980px){
+  .hero{grid-template-columns: 1fr}
+  .grid{grid-template-columns: repeat(2, 1fr)}
+  .modalGrid{grid-template-columns:1fr}
+  .mLeft img{height:360px}
+}
+@media (max-width: 520px){
+  .grid{grid-template-columns:1fr}
+  .hero h1{font-size:36px}
+  .navMid{display:none}
+  .genderPick{min-width:unset; width:100%}
+}
+/* 🔥 FINAL FORCE BORDO BACKGROUND */
+
+body{
+  background: linear-gradient(135deg,#3a0014 0%,#6d0828 45%,#a0123d 100%) !important;
+  background-attachment: fixed;
+}
+
+/* əvvəlki ağ blur layer tam deaktiv */
+.bg,
+.bgBlob,
+.bgMist{
+  display:none !important;
+}
+/* 🔥 1. ARXA FON QARA */
+body{
+  background:#f50e068e !important;
+}
+
+/* 🔥 2. KATALOQ BORDO */
+.catalog{
+  background:linear-gradient(135deg,#5a001f,#7a0c2e,#a0123d);
+  padding:30px;
+  border-radius:24px;
+}
+
+/* 🔥 3. SİFARİŞ ET SARl */
+.sbtn.primary{
+  background:#FFD700 !important;
+  color:#000 !important;
+  border:none !important;
+  font-weight:900;
+}
+
+/* 🔥 4. ŞƏKİL ÜSTÜ QİYMƏT SARI */
+.priceBadge{
+  background:#FFD700 !important;
+  color:#000 !important;
+  border:none !important;
+  font-weight:900;
+}
+/* 🔥 Filter klik rəngi düzəlişi */
+.chip.active{
+  background:#FFD700 !important;   /* Sarı aktiv */
+  color:#000 !important;           /* Yazı qara */
+  border:none !important;
+  font-weight:900;
+}
+
+/* Hover da uyğun olsun */
+.chip:hover{
+  background:#ffe44d;
+  color:#000;
+}
+
+/* 🔥 Kataloq başlığı rəngi */
+.catalog h2{
+  color:#FFD700 !important;   /* Sarı başlıq */
+  font-weight:900;
+}
+
+/* Alt filter yazısı da oxunsun */
+.sub{
+  color:#f5d6e0 !important;
+}
+.contactLinks{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  margin-top:15px;
+}
+
+.contactBtn{
+  display:block;
+  padding:12px 16px;
+  border-radius:14px;
+  font-weight:900;
+  text-decoration:none;
+  text-align:center;
+  transition:.2s;
+}
+
+/* WhatsApp yaşıl */
+.contactBtn.whatsapp{
+  background:#25D366;
+  color:#000;
+}
+
+/* Instagram gradient */
+.contactBtn.instagram{
+  background:linear-gradient(45deg,#f9ce34,#ee2a7b,#6228d7);
+  color:#fff;
+}
+
+/* TikTok qara */
+.contactBtn.tiktok{
+  background:#000;
+  color:#fff;
+  border:1px solid #fff;
+}
+
+.contactBtn:hover{
+  transform:translateY(-3px);
+}
+/* ✅ Səbətə əlavə et – Sarı fon + QARA yazı */
+#mCopy{
+  background:#FFD700 !important;
+  color:#000 !important;   /* Qara yazı */
+  border:none !important;
+  font-weight:1000 !important;
+}
+
+/* Hover effekti */
+#mCopy:hover{
+  filter:brightness(.95);
+  transform:translateY(-1px);
+}
