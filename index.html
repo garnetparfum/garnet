@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="az">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Garnet Parfum | Premium Ətirlər</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div id="preloader">
+    <div class="preloader-content">
+      <div class="loader-logo">GARNET</div>
+      <div class="loader-bar"><div class="loader-progress"></div></div>
+      <div class="loader-text">Zəriflik yüklənir...</div>
+    </div>
+  </div>
+
+  <header class="nav">
+    <div class="navLeft">
+      <div class="logo">
+        <div class="logoMark"></div>
+        <div>
+          <div class="logoName">Garnet Parfum</div>
+          <div class="logoSub">Premium ətirlər • 2026</div>
+        </div>
+      </div>
+    </div>
+    <div class="navRight">
+      <button class="btn ghost" id="btnCart">🛒 Səbət <span id="cartCount">(0)</span></button>
+      <button class="btn primary" onclick="document.getElementById('catalog').scrollIntoView({behavior:'smooth'})">Kataloq</button>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div class="heroText">
+        <div class="badge">GARNET • PARFUM</div>
+        <h1>İmzan olan <span>qoxu</span> — seç.</h1>
+        <div class="genderPick" id="genderPick">
+          <div class="genderBtns">
+            <button class="gbtn active" data-gender="all">Hamısı</button>
+            <button class="gbtn" data-gender="male">Kişi</button>
+            <button class="gbtn" data-gender="female">Qadın</button>
+            <button class="gbtn" data-gender="unisex">Unisex</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="catalog" id="catalog">
+      <div class="catalogTop">
+        <h2>Kataloq</h2>
+        <div class="search"><input id="search" placeholder="Brend və ya ətir axtar..." /></div>
+      </div>
+      <div class="chips" id="chips">
+        <button class="chip active" data-cat="all">Hamısı</button>
+        <button class="chip" data-cat="sweet">Şirin</button>
+        <button class="chip" data-cat="medium">Orta</button>
+        <button class="chip" data-cat="dark">Tünd</button>
+        <button class="chip" data-cat="fresh">Sərin</button>
+        <button class="chip" data-cat="woody">Odunsu</button>
+      </div>
+      <div class="grid" id="grid"></div>
+    </section>
+  </main>
+
+  <div class="modalBack" id="modalBack">
+    <div class="modal">
+      <button class="x" id="x">✕</button>
+      <div class="modalGrid">
+        <div class="mLeft"><img id="mImg" src="" /></div>
+        <div class="mRight">
+          <div class="tagRow"><span class="tag" id="mCat">Ətir</span><span class="tag outline" id="mSizeLabel">Seç</span></div>
+          <h3 id="mName">Ad</h3>
+          <div class="notes" id="mNotes">Notlar</div>
+          
+          <div class="optBlock">
+            <div class="optTitle">Həcm seç:</div>
+            <div class="optRow" id="mSizes">
+              <button class="optBtn" data-size="20">20ml</button>
+              <button class="optBtn" data-size="30">30ml</button>
+              <button class="optBtn" data-size="50">50ml</button>
+            </div>
+          </div>
+
+          <div class="optBlock hidden" id="mDeliveryWrap">
+            <div class="optTitle">Çatdırılma:</div>
+            <div class="optRow" id="mDelivery">
+              <button class="optBtn" data-delivery="Metro">Metro</button>
+              <button class="optBtn" data-delivery="Taksi">Taksi</button>
+              <button class="optBtn" data-delivery="Kargo">Kargo</button>
+            </div>
+            
+            <div id="metroSelectWrap" class="hidden" style="margin-top:10px;">
+              <select id="metroStation" style="width:100%; padding:10px; border-radius:10px; border:1px solid #ddd;">
+                <option value="">Stansiyanı seçin...</option>
+                <optgroup label="Qırmızı Xətt">
+                  <option>İçərişəhər</option><option>Sahil</option><option>28 May</option><option>Gənclik</option>
+                  <option>Nəriman Nərimanov</option><option>Ulduz</option><option>Koroğlu</option><option>Qara Qarayev</option>
+                  <option>Nefçilər</option><option>Xalqlar Dostluğu</option><option>Əhmədli</option><option>Həzi Aslanov</option>
+                </optgroup>
+                <optgroup label="Yaşıl Xətt">
+                  <option>Xətai</option><option>Cəfər Cabbarlı</option><option>Nizami</option><option>Elmlər Akademiyası</option>
+                  <option>İnşaatçılar</option><option>20 Yanvar</option><option>Memar Əcəmi</option><option>Nəsimi</option>
+                  <option>Azadlıq Prospekti</option><option>Dərnəgül</option>
+                </optgroup>
+                <optgroup label="Bənövşəyi Xətt">
+                  <option>8 Noyabr</option><option>Avtovağzal</option><option>Xocəsən</option>
+                </optgroup>
+              </select>
+            </div>
+          </div>
+
+          <div class="priceRow"><div class="price" id="mPrice">0 AZN</div></div>
+          <div class="mBtns">
+            <button class="btn primary" style="width:100%" id="mCopy">Səbətə əlavə et</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modalBack" id="cartBack">
+    <div class="modal">
+      <button class="x" id="cartX">✕</button>
+      <div style="padding:20px;">
+        <div style="display:flex; gap:20px; border-bottom:1px solid #eee; margin-bottom:15px;">
+           <button id="tabCart" style="border:none; background:none; font-weight:900; padding:10px; cursor:pointer; color:#a0123d; border-bottom:2px solid #a0123d;">Səbət</button>
+           <button id="tabHistory" style="border:none; background:none; font-weight:900; padding:10px; cursor:pointer; color:#666;">Tarixçə</button>
+        </div>
+        <div id="cartSection">
+            <div id="cartItems"></div>
+            <div style="margin-top:15px; background:#f9f9f9; padding:10px; border-radius:10px; display:flex; gap:5px;">
+                <input type="text" id="promoInput" placeholder="Promokod" style="flex:1; padding:8px; border:1px solid #ddd; border-radius:5px;">
+                <button class="btn ghost" id="promoBtn" style="padding:8px;">Ok</button>
+            </div>
+            <div id="bundleInfo" style="margin-top:10px; font-size:11px; color:#27ae60; font-weight:700;"></div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px;">
+              <div style="font-weight:900;">Cəmi: <span id="cartTotal">0 AZN</span></div>
+              <button class="btn primary" id="cartCheckout">WhatsApp Sifariş</button>
+            </div>
+        </div>
+        <div id="historySection" class="hidden"><div id="historyItems"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <a href="https://wa.me/994517238896" target="_blank" class="floatingWA">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="25">
+    <span>Bizə yazın</span>
+  </a>
+
+  <div id="orderPopup" class="orderPopup"></div>
+  <script src="app.js"></script>
+</body>
+</html>
