@@ -3,8 +3,6 @@
 // Profil qeydiyyatı silinib, digər funksiyalar aktivdir.
 // =========================
 
-const WHATSAPP_PHONE = "994517238896";
-let appliedPromo = null; 
 
 // ✅ Metro qiymət siyahısı
 const METRO_PRICES = {
@@ -149,9 +147,6 @@ function calculateFinalTotal(cart) {
   subtotal += metroTotal;
 
   if (totalQty >= 2) { subtotal *= 0.9; msg = "🎁 2+ ətir: 10% Bundle endirimi tətbiq edildi!"; }
-  if (appliedPromo === "GARNET10") subtotal *= 0.9;
-  else if (appliedPromo === "YAY20") subtotal *= 0.8;
-
   return { total: Math.round(subtotal), msg: msg, deliveryCost: metroTotal };
 }
 
@@ -205,4 +200,3 @@ function saveCart(cart) { localStorage.setItem(CART_KEY, JSON.stringify(cart)); 
 function updateCartCountUI() { $("#cartCount").textContent = `(${loadCart().reduce((s,i)=>s+i.qty, 0)})`; }
 
 // İnterfeys və sifariş axını campaign.js tərəfindən idarə olunur.
-
