@@ -1,0 +1,101 @@
+.campaign-open { overflow: hidden; }
+
+.campaign-back {
+  position: fixed;
+  inset: 0;
+  z-index: 11000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(22, 0, 8, .78);
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .25s ease, visibility .25s ease;
+}
+
+.campaign-back.show { opacity: 1; visibility: visible; }
+
+.campaign-modal {
+  position: relative;
+  width: min(680px, 96vw);
+  padding: 34px;
+  overflow: hidden;
+  color: #fff;
+  text-align: center;
+  border: 1px solid rgba(255, 215, 0, .55);
+  border-radius: 28px;
+  background: radial-gradient(circle at 50% 0, #a0123d 0, #6d0828 42%, #3a0014 100%);
+  box-shadow: 0 30px 100px rgba(0, 0, 0, .5), inset 0 0 50px rgba(255, 215, 0, .08);
+}
+
+.campaign-modal::before {
+  content: "";
+  position: absolute;
+  inset: 10px;
+  pointer-events: none;
+  border: 1px solid rgba(255, 215, 0, .22);
+  border-radius: 21px;
+}
+
+.campaign-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 2;
+  width: 42px;
+  height: 42px;
+  cursor: pointer;
+  color: #3a0014;
+  font-size: 18px;
+  font-weight: 900;
+  border: 0;
+  border-radius: 50%;
+  background: #ffd700;
+}
+
+.campaign-kicker { color: #ffd700; font-size: 12px; font-weight: 900; letter-spacing: 4px; }
+.campaign-modal h2 { margin: 12px 0 22px; font-size: clamp(34px, 7vw, 58px); line-height: .98; }
+.campaign-modal h2 span { color: #ffd700; }
+
+.campaign-modal-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+.campaign-modal-grid > div { display: grid; gap: 7px; padding: 18px; border-radius: 18px; background: rgba(255, 255, 255, .1); border: 1px solid rgba(255, 255, 255, .18); }
+.campaign-modal-grid strong { color: #ffd700; font-size: 17px; }
+.campaign-modal-grid span { font-size: 16px; font-weight: 800; }
+
+.campaign-condition { margin-top: 18px; padding: 15px 18px; color: #3a0014; font-weight: 900; line-height: 1.45; border-radius: 16px; background: #ffd700; }
+
+.campaign-card { position: relative; }
+.campaign-ribbon { position: absolute; top: 12px; right: -34px; z-index: 2; width: 135px; padding: 7px 0; color: #3a0014; text-align: center; font-size: 10px; font-weight: 900; letter-spacing: 1px; background: #ffd700; transform: rotate(42deg); box-shadow: 0 4px 16px rgba(0,0,0,.2); }
+.campaign-card-prices { display: grid; gap: 5px; padding: 9px; color: #4a0019; font-size: 10.5px; line-height: 1.4; border: 1px solid rgba(160, 18, 61, .18); border-radius: 12px; background: #fff7da; }
+.campaign-card-prices div { overflow-wrap: anywhere; }
+.campaign-card-prices span { color: #b48d00; }
+.campaign-card-prices small { color: #a0123d; font-weight: 900; }
+.normal-price-line { color: #777; text-decoration: line-through; }
+.regular-card-price { color: var(--wine); font-weight: 900; }
+
+.modal-price-note { display: block; margin-top: 4px; color: #777; font-size: 11px; }
+
+.campaign-cart-row { display: grid; grid-template-columns: 56px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 13px 0; border-bottom: 1px solid #eee; }
+.campaign-cart-row > img { width: 56px; height: 56px; object-fit: cover; border-radius: 10px; }
+.campaign-cart-info { display: grid; min-width: 0; gap: 3px; font-size: 12px; }
+.campaign-cart-info strong { overflow-wrap: anywhere; color: var(--wine); }
+.campaign-cart-info small { color: #666; }
+.cart-qty-controls { display: flex; align-items: center; gap: 6px; }
+.cart-qty-controls .btn { min-width: 30px; padding: 5px 8px; }
+.campaign-status { margin-top: 10px; padding: 10px 12px; border-radius: 10px; font-size: 12px; font-weight: 900; }
+.campaign-status.applied { color: #176b39; background: #e9f9ef; }
+.campaign-status.pending { color: #8a5600; background: #fff4d3; }
+.cart-empty { padding: 20px; color: #777; text-align: center; }
+
+@media (max-width: 620px) {
+  .campaign-modal { padding: 30px 16px 20px; }
+  .campaign-modal-grid { grid-template-columns: 1fr; gap: 9px; }
+  .campaign-modal-grid > div { padding: 12px; }
+  .campaign-condition { font-size: 12px; }
+  .campaign-card-prices { font-size: 10px; }
+  .campaign-cart-row { grid-template-columns: 44px minmax(0, 1fr); }
+  .campaign-cart-row > img { width: 44px; height: 44px; }
+  .cart-qty-controls { grid-column: 2; justify-content: flex-start; }
+}
