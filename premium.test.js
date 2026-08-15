@@ -4,11 +4,9 @@ const {
   ORDER_CONFIG,
   resolveUnitPrice,
   summarizeCampaignCart,
-  deliveryText,
   formatAzPhone,
   isValidAzPhone,
-  validateCheckoutStep,
-  formatOrderDate,
+  validateSimpleOrder,
   buildWhatsAppOrderText
 } = require("./premium.js");
 
@@ -23,7 +21,6 @@ assert.equal(result.total, 25);
 assert.equal(result.campaignApplied, false);
 
 result = summarizeCampaignCart([swiss30, france50]);
-assert.equal(result.subtotal, 34);
 assert.equal(result.total, 34);
 assert.equal(result.campaignApplied, true);
 
@@ -31,54 +28,46 @@ result = summarizeCampaignCart([{ ...swiss30, qty: 2 }]);
 assert.equal(result.total, 24);
 assert.equal(result.campaignApplied, true);
 
-result = summarizeCampaignCart([swiss30, france50], "GARNET10");
-assert.equal(result.discount, 3);
-assert.equal(result.total, 31);
-
-assert.equal(deliveryText(), "Çatdırılma: ayrıca");
-assert.equal(deliveryText(5), "Çatdırılma: 5 AZN");
-assert.equal(ORDER_CONFIG.paymentCard, null);
-
+assert.equal(ORDER_CONFIG.whatsappPhone, "994517238896");
 assert.equal(formatAzPhone("0501234567"), "+994 50 123 45 67");
 assert.equal(formatAzPhone("994501234567"), "+994 50 123 45 67");
 assert.equal(isValidAzPhone("+994 50 123 45 67"), true);
 assert.equal(isValidAzPhone("+994 40 123 45 67"), false);
 
-const today = "2026-08-15";
-assert.deepEqual(validateCheckoutStep({}, 1, today), {
-  name: "Ad və soyadı tam daxil edin.",
-  phone: "Nömrəni +994 XX XXX XX XX formatında daxil edin."
+assert.deepEqual(validateSimpleOrder({}), {
+  name: "Bu sahəni doldurun",
+  phone: "Bu sahəni doldurun",
+  address: "Bu sahəni doldurun",
+  paymentMethod: "Bu sahəni doldurun"
 });
-assert.equal(validateCheckoutStep({
-  address: "Bakı şəhəri, Nizami küçəsi 10",
-  deliveryDate: "2026-08-14",
-  deliveryTime: "10:00–13:00"
-}, 2, today).deliveryDate, "Keçmiş tarix seçilə bilməz.");
-assert.deepEqual(validateCheckoutStep({
-  address: "Bakı şəhəri, Nizami küçəsi 10",
-  deliveryDate: "2026-08-16",
-  deliveryTime: "10:00–13:00"
-}, 2, today), {});
-assert.equal(formatOrderDate("2026-08-20"), "20.08.2026");
+assert.deepEqual(validateSimpleOrder({
+  name: "Fatimə",
+  phone: "+994 50 123 45 67",
+  address: "Bakı, Nizami küçəsi 10",
+  paymentMethod: "Nağd"
+}), {});
 
 const message = buildWhatsAppOrderText({
-  name: "Fatimə Məmmədova",
+  name: "Fatimə",
   phone: "+994 50 123 45 67",
-  address: "Bakı şəhəri, Nizami küçəsi 10",
-  deliveryDate: "2026-08-20",
-  deliveryTime: "13:00–17:00",
-  note: "Zəng edin",
+  address: "Bakı, Nizami küçəsi 10",
   paymentMethod: "Nağd"
 }, [{ ...swiss30, unitPrice: 12, lineTotal: 12 }], 12);
-assert.match(message, /Fatimə Məmmədova/);
-assert.match(message, /Montale Vanilla — İsveçrə, 30 ml — 12 AZN/);
-assert.match(message, /Ümumi ödəniş: 12 AZN/);
-assert.match(message, /Çatdırılma: ayrıca/);
-assert.match(message, /Nağd — kuryerə$/);
+assert.match(message, /^Salam, Garnet Parfumdan sifariş vermək istəyirəm\./);
+assert.match(message, /Ad: Fatimə/);
+assert.match(message, /Ünvan: Bakı, Nizami küçəsi 10/);
+assert.match(message, /Ödəniş: Nağd/);
+assert.match(message, /1\. Montale — Vanilla, İsveçrə, 30 ml, 1 ədəd × 12 AZN — 12 AZN/);
+assert.match(message, /Yekun məbləğ: 12 AZN$/);
+assert.equal(decodeURIComponent(encodeURIComponent(message)), message);
 
 for (const file of ["app.js", "premium.js", "index.html"]) {
   const source = fs.readFileSync(file, "utf8");
   assert.doesNotMatch(source, /\b(?:alert|confirm|prompt)\s*\(/, file + " standard browser dialogs must not exist");
 }
+const html = fs.readFileSync("index.html", "utf8");
+assert.doesNotMatch(html, /Promokod|checkout-step|deliveryDate|customerNote/);
+assert.match(html, /Sifarişi rəsmiləşdir/);
+assert.match(html, /Məlumatları daxil edin, sifarişiniz WhatsApp-da hazır şəkildə açılsın\./);
 
-console.log("Premium storefront and checkout scenarios passed.");
+console.log("Sadə sifariş axını və kampaniya ssenariləri uğurla keçdi.");

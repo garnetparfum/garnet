@@ -11,9 +11,7 @@ const CAMPAIGN_CONFIG = Object.freeze({
 });
 
 const ORDER_CONFIG = Object.freeze({
-  deliveryFee: null,
-  promoCodes: Object.freeze({ GARNET10: 10, YAY20: 20 }),
-  paymentCard: null
+  whatsappPhone: "994517238896"
 });
 
 function campaignPrice(country, size) {
@@ -28,7 +26,7 @@ function resolveUnitPrice(item, totalQuantity) {
   return eligible ? promotionalPrice : Number(item.normalPrice ?? item.price ?? 0);
 }
 
-function summarizeCampaignCart(cart, promoCode) {
+function summarizeCampaignCart(cart) {
   const totalQuantity = cart.reduce((sum, item) => sum + Number(item.qty || 0), 0);
   const campaignApplied = CAMPAIGN_CONFIG.active && totalQuantity >= CAMPAIGN_CONFIG.minimumQuantity;
   const lines = cart.map(item => {
@@ -37,34 +35,14 @@ function summarizeCampaignCart(cart, promoCode) {
     return { ...item, qty, unitPrice, lineTotal: unitPrice * qty };
   });
   const subtotal = lines.reduce((sum, item) => sum + item.lineTotal, 0);
-  const code = String(promoCode || "").trim().toUpperCase();
-  const promoPercent = ORDER_CONFIG.promoCodes[code] || 0;
-  const discount = Math.round(subtotal * promoPercent / 100);
   return {
     totalQuantity,
     campaignApplied,
     lines,
     subtotal,
     productsTotal: subtotal,
-    promoCode: promoPercent ? code : null,
-    promoPercent,
-    discount,
-    deliveryCost: 0,
-    total: subtotal - discount
+    total: subtotal
   };
-}
-
-function deliveryText(fee) {
-  const value = arguments.length ? fee : ORDER_CONFIG.deliveryFee;
-  return value === null || value === undefined || value === ""
-    ? "Çatdırılma: ayrıca"
-    : "Çatdırılma: " + Number(value) + " AZN";
-}
-
-function todayIso(date) {
-  const value = date || new Date();
-  const offset = value.getTimezoneOffset();
-  return new Date(value.getTime() - offset * 60000).toISOString().slice(0, 10);
 }
 
 function formatAzPhone(value) {
@@ -80,41 +58,27 @@ function isValidAzPhone(value) {
   return /^\+994 (10|50|51|55|60|70|77|99) \d{3} \d{2} \d{2}$/.test(String(value || ""));
 }
 
-function validateCheckoutStep(data, step, minimumDate) {
+function validateSimpleOrder(data) {
   const errors = {};
-  const minDate = minimumDate || todayIso();
-  if (step === 1 || step === "all") {
-    if (String(data.name || "").trim().length < 3) errors.name = "Ad və soyadı tam daxil edin.";
-    if (!isValidAzPhone(data.phone)) errors.phone = "Nömrəni +994 XX XXX XX XX formatında daxil edin.";
-  }
-  if (step === 2 || step === "all") {
-    if (String(data.address || "").trim().length < 8) errors.address = "Çatdırılma ünvanını tam daxil edin.";
-    if (!data.deliveryDate) errors.deliveryDate = "Çatdırılma tarixini seçin.";
-    else if (data.deliveryDate < minDate) errors.deliveryDate = "Keçmiş tarix seçilə bilməz.";
-    if (!data.deliveryTime) errors.deliveryTime = "Çatdırılma vaxtını seçin.";
-  }
-  if ((step === 3 || step === "all") && !data.paymentMethod) errors.paymentMethod = "Ödəniş üsulunu seçin.";
+  if (!String(data.name || "").trim()) errors.name = "Bu sahəni doldurun";
+  if (!String(data.phone || "").trim()) errors.phone = "Bu sahəni doldurun";
+  else if (!isValidAzPhone(data.phone)) errors.phone = "Nömrəni düzgün daxil edin";
+  if (!String(data.address || "").trim()) errors.address = "Bu sahəni doldurun";
+  if (!data.paymentMethod) errors.paymentMethod = "Bu sahəni doldurun";
   return errors;
 }
-
-function formatOrderDate(value) {
-  if (!value) return "";
-  const parts = value.split("-");
-  return parts[2] + "." + parts[1] + "." + parts[0];
-}
-
-function buildWhatsAppOrderText(data, pricedLines, productsTotal, deliveryFee) {
-  const productLines = pricedLines.map(item => {
+function buildWhatsAppOrderText(data, pricedLines, productsTotal) {
+  const productLines = pricedLines.map((item, index) => {
     const qty = Number(item.qty || 1);
-    return item.brand + " " + item.name + " — " + item.country + ", " + item.size +
-      " ml — " + item.unitPrice + " AZN" + (qty > 1 ? " × " + qty : "");
+    return (index + 1) + ". " + item.brand + " — " + item.name + ", " + item.country + ", " +
+      item.size + " ml, " + qty + " ədəd × " + item.unitPrice + " AZN — " + item.lineTotal + " AZN";
   }).join("\n");
-  const note = String(data.note || "").trim() ? "\nQeyd: " + String(data.note).trim() + "\n" : "\n";
-  const payment = data.paymentMethod === "Nağd" ? "Nağd — kuryerə" : "Kartla ödəniş";
-  return String(data.name).trim() + "\n" + String(data.phone).trim() + "\n" +
-    String(data.address).trim() + "\n" + formatOrderDate(data.deliveryDate) + ", " +
-    data.deliveryTime + note + "\n" + productLines + "\n\nÜmumi ödəniş: " +
-    Math.round(productsTotal) + " AZN\n" + deliveryText(deliveryFee) + "\n" + payment;
+  return "Salam, Garnet Parfumdan sifariş vermək istəyirəm.\n\n" +
+    "Ad: " + String(data.name).trim() + "\n" +
+    "Telefon: " + String(data.phone).trim() + "\n" +
+    "Ünvan: " + String(data.address).trim() + "\n" +
+    "Ödəniş: " + data.paymentMethod + "\n\n" +
+    "Sifariş:\n" + productLines + "\n\nYekun məbləğ: " + Math.round(productsTotal) + " AZN";
 }
 
 if (typeof window !== "undefined") {
@@ -126,7 +90,7 @@ if (typeof document !== "undefined") {
   (() => {
     const CART_KEY_CURRENT = "garnet_cart_v2";
     const HISTORY_KEY_CURRENT = "garnet_history_v1";
-    const ui = { product: null, country: null, size: null, step: 1, busy: false, lastFocus: null };
+    const ui = { product: null, country: null, size: null, busy: false, lastFocus: null };
     const fallbackImage = "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(
       '<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600"><rect width="100%" height="100%" fill="#f3eadc"/><text x="50%" y="48%" text-anchor="middle" font-family="serif" font-size="110" fill="#6f1734">G</text><text x="50%" y="60%" text-anchor="middle" font-family="sans-serif" font-size="20" letter-spacing="6" fill="#8a2442">GARNET</text></svg>'
     );
@@ -162,13 +126,13 @@ if (typeof document !== "undefined") {
       updateCartCountUI();
     };
     calculateFinalTotal = cart => {
-      const result = summarizeCampaignCart(normalizeCart(cart), appliedPromo);
+      const result = summarizeCampaignCart(normalizeCart(cart));
       return {
         ...result,
         msg: result.campaignApplied
           ? "Kampaniya qiymətləri tətbiq edildi."
           : (result.totalQuantity === 1
-            ? "Kampaniya qiymətlərindən yararlanmaq üçün səbətə daha 1 məhsul əlavə edin."
+            ? "Kampaniya üçün daha 1 məhsul əlavə edin."
             : "")
       };
     };
@@ -243,7 +207,7 @@ if (typeof document !== "undefined") {
     }
 
     function syncBodyLock() {
-      const locked = $(".overlay.show") || $(".drawer-backdrop.show") || $(".checkout-page.show") || $(".campaign-back.show");
+      const locked = $(".overlay.show") || $(".drawer-backdrop.show") || $(".campaign-back.show");
       document.body.classList.toggle("no-scroll", Boolean(locked));
     }
 
@@ -310,11 +274,9 @@ if (typeof document !== "undefined") {
     function syncModalSelection() {
       const complete = Boolean(ui.country && ui.size);
       $("#mCopy").disabled = !complete || ui.busy;
-      $("#mAddHint").textContent = complete
-        ? "Seçiminiz hazırdır."
-        : "Davam etmək üçün istehsal ölkəsi və həcmi seçin.";
+      $("#mAddHint").textContent = complete ? "" : "Ölkə və həcmi seçin";
       if (!complete) {
-        $("#mPrice").textContent = "Ölkə və həcm seçin";
+        $("#mPrice").textContent = "";
         return;
       }
       const normal = priceBySize(ui.product.price20, ui.size);
@@ -345,7 +307,6 @@ if (typeof document !== "undefined") {
       $("#mImg").src = product.img;
       $("#mImg").alt = product.brand + " " + product.name + " ətiri";
       setImageFallback($("#mImg"));
-      $("#mCat").textContent = catLabel(product.cat).toLocaleUpperCase("az");
       $("#mName").textContent = product.brand + " — " + product.name;
       $("#mNotes").textContent = product.notes;
       $$("#mSizes [data-size]").forEach(button => {
@@ -403,8 +364,6 @@ if (typeof document !== "undefined") {
       const wrap = $("#cartItems");
       if (!cart.length) {
         wrap.innerHTML = '<div class="cart-empty"><div><span class="empty-state-icon">G</span><h3>Səbətiniz boşdur</h3><p>Bəyəndiyiniz ətri seçərək sifarişə başlayın.</p><button class="button button-primary" type="button" data-cart-action="catalog">Kataloqa qayıt</button></div></div>';
-        $("#cartSubtotal").textContent = "0 AZN";
-        $("#cartDiscount").textContent = "− 0 AZN";
         $("#cartTotal").textContent = "0 AZN";
         $("#bundleInfo").textContent = "";
         $("#cartCheckout").disabled = true;
@@ -429,8 +388,6 @@ if (typeof document !== "undefined") {
         '</article>'
       ).join("");
       $$("#cartItems img").forEach(setImageFallback);
-      $("#cartSubtotal").textContent = money(result.subtotal);
-      $("#cartDiscount").textContent = "− " + money(result.discount);
       $("#cartTotal").textContent = money(result.total);
       $("#bundleInfo").textContent = result.msg;
       $("#bundleInfo").className = "campaign-status " + (result.campaignApplied ? "applied" : "pending");
@@ -455,7 +412,6 @@ if (typeof document !== "undefined") {
       if (item.qty <= 0) cart = cart.filter(entry => entry.key !== key);
       saveCart(cart);
       renderCart();
-      renderCheckoutSummary();
     }
 
     function removeCartItem(button, key) {
@@ -473,27 +429,7 @@ if (typeof document !== "undefined") {
       }
       saveCart(loadCart().filter(item => item.key !== key));
       renderCart();
-      renderCheckoutSummary();
       showToast("Məhsul səbətdən silindi.");
-    }
-
-    function applyPromo() {
-      const code = $("#promoInput").value.trim().toUpperCase();
-      const status = $("#promoStatus");
-      if (!code) {
-        appliedPromo = null;
-        status.textContent = "Promokod sahəsi boşdur.";
-        status.className = "error";
-      } else if (ORDER_CONFIG.promoCodes[code]) {
-        appliedPromo = code;
-        status.textContent = ORDER_CONFIG.promoCodes[code] + "% endirim tətbiq edildi.";
-        status.className = "success";
-      } else {
-        appliedPromo = null;
-        status.textContent = "Promokod düzgün deyil.";
-        status.className = "error";
-      }
-      renderCart();
     }
 
     function normalizeHistoryEntry(entry, index) {
@@ -544,184 +480,88 @@ if (typeof document !== "undefined") {
     }
     window.renderHistory = renderHistory;
 
-    function checkoutData() {
+    function orderData() {
       return {
         name: $("#customerName").value,
         phone: $("#customerPhone").value,
         address: $("#deliveryAddress").value,
-        deliveryDate: $("#deliveryDate").value,
-        deliveryTime: $("#deliveryTime").value,
-        note: $("#customerNote").value,
-        paymentMethod: $('#checkoutForm [name="paymentMethod"]:checked')?.value || ""
+        paymentMethod: $('#orderForm [name="paymentMethod"]:checked')?.value || ""
       };
     }
 
-    function clearFieldErrors(step) {
-      const section = $('.checkout-step[data-step="' + step + '"]');
-      section?.querySelectorAll(".field").forEach(field => field.classList.remove("invalid"));
-      section?.querySelectorAll(".field-error").forEach(error => { error.textContent = ""; });
-      $("#paymentError").textContent = "";
+    function clearOrderErrors() {
+      $$("#orderForm .field").forEach(field => field.classList.remove("invalid"));
+      $$("#orderForm .field-error").forEach(error => { error.textContent = ""; });
     }
 
-    function showStepErrors(step, errors) {
-      clearFieldErrors(step);
+    function showOrderErrors(errors) {
+      clearOrderErrors();
       Object.entries(errors).forEach(([name, message]) => {
         if (name === "paymentMethod") {
           $("#paymentError").textContent = message;
           return;
         }
-        const input = $('#checkoutForm [name="' + name + '"]');
+        const input = $('#orderForm [name="' + name + '"]');
         const field = input?.closest(".field");
         if (field) {
           field.classList.add("invalid");
           field.querySelector(".field-error").textContent = message;
         }
       });
-      const first = $('.checkout-step[data-step="' + step + '"] .invalid input, .checkout-step[data-step="' +
-        step + '"] .invalid select');
-      first?.focus?.();
+      $('#orderForm .invalid input')?.focus();
     }
 
-    function setCheckoutStep(step) {
-      ui.step = Math.max(1, Math.min(4, step));
-      $$(".checkout-step").forEach(section =>
-        section.classList.toggle("active", Number(section.dataset.step) === ui.step)
-      );
-      $$("[data-step-indicator]").forEach(indicator => {
-        const value = Number(indicator.dataset.stepIndicator);
-        indicator.classList.toggle("active", value === ui.step);
-        indicator.classList.toggle("done", value < ui.step);
-      });
-      $("#stepBack").classList.toggle("hidden", ui.step === 1);
-      $("#stepNext").classList.toggle("hidden", ui.step === 4);
-      $("#completeOrder").classList.toggle("hidden", ui.step !== 4);
-      if (ui.step === 4) renderReview();
-      $("#checkoutPage").scrollTo({ top: 0, behavior: "smooth" });
-    }
-
-    function renderCheckoutSummary() {
-      const result = calculateFinalTotal(loadCart());
-      $("#checkoutSummaryItems").innerHTML = result.lines.map(item =>
-        '<div class="summary-row">' +
-          '<img src="' + item.img + '" alt="">' +
-          '<div><strong>' + item.brand + " " + item.name + '</strong><span>' + item.country +
-            ' · ' + item.size + ' ml · ' + item.qty + ' ədəd</span></div>' +
-          '<b>' + money(item.lineTotal) + '</b>' +
-        '</div>'
-      ).join("");
-      $$("#checkoutSummaryItems img").forEach(setImageFallback);
-      $("#checkoutSubtotal").textContent = money(result.total);
-      $("#checkoutDelivery").textContent = ORDER_CONFIG.deliveryFee === null
-        ? "ayrıca"
-        : money(ORDER_CONFIG.deliveryFee);
-      $("#checkoutTotal").textContent = money(result.total);
-      $("#paymentAmount").textContent = money(result.total);
-    }
-
-    function renderReview() {
-      const data = checkoutData();
-      const result = calculateFinalTotal(loadCart());
-      $("#reviewCustomer").innerHTML =
-        '<p><strong>' + data.name + '</strong></p><p>' + data.phone + '</p><p>' +
-        data.address + '</p><p>' + formatOrderDate(data.deliveryDate) + " · " +
-        data.deliveryTime + '</p><p>' + data.paymentMethod + '</p>' +
-        (data.note ? '<p>Qeyd: ' + data.note + '</p>' : "");
-      $("#reviewItems").innerHTML = result.lines.map(item =>
-        '<div class="review-item"><span>' + item.brand + " " + item.name + " — " +
-          item.country + ", " + item.size + " ml × " + item.qty + '</span><b>' +
-          money(item.lineTotal) + '</b></div>'
-      ).join("") + '<div class="review-item"><span>Ümumi məbləğ</span><b>' +
-        money(result.total) + '</b></div>';
-    }
-
-    function syncPaymentPanel() {
-      const method = $('#checkoutForm [name="paymentMethod"]:checked')?.value || "";
-      $("#cardPaymentPanel").classList.toggle("hidden", method !== "Kartla");
-      $("#cashPaymentPanel").classList.toggle("hidden", method !== "Nağd");
-      if (method) $("#paymentError").textContent = "";
-      const card = ORDER_CONFIG.paymentCard;
-      const available = Boolean(
-        card?.holder && card?.bank && /^\d{16}$/.test(String(card?.number || "").replace(/\D/g, ""))
-      );
-      $("#cardUnavailable").classList.toggle("hidden", available);
-      $("#cardDetails").classList.toggle("hidden", !available);
-      if (available) {
-        $("#cardHolder").textContent = card.holder;
-        $("#cardBank").textContent = card.bank;
-        $("#cardNumber").textContent = String(card.number).replace(/(\d{4})(?=\d)/g, "$1 ");
-      }
-    }
-
-    function openCheckout() {
-      if (!loadCart().length) {
+    function openOrder() {
+      const cart = loadCart();
+      if (!cart.length) {
         showToast("Səbət boşdur. Əvvəlcə məhsul əlavə edin.", "error");
         return;
       }
       closeCart();
-      $("#deliveryDate").min = todayIso();
-      if (!$("#deliveryDate").value) $("#deliveryDate").value = todayIso();
-      renderCheckoutSummary();
-      setCheckoutStep(1);
-      openLayer($("#checkoutPage"), $("#customerName"));
+      $("#orderTotal").textContent = money(calculateFinalTotal(cart).total);
+      openLayer($("#orderBack"), $("#customerName"));
     }
 
-    function closeCheckout() {
-      closeLayer($("#checkoutPage"));
-    }
-
-    async function copyCardNumber() {
-      const number = String(ORDER_CONFIG.paymentCard?.number || "").replace(/\D/g, "");
-      if (!/^\d{16}$/.test(number)) {
-        showToast("Kart rekvizitləri açıq saytda mövcud deyil.", "error");
-        return;
-      }
-      try {
-        await navigator.clipboard.writeText(number);
-        showToast("Kart nömrəsi kopyalandı");
-      } catch {
-        showToast("Kart nömrəsini kopyalamaq mümkün olmadı.", "error");
-      }
+    function closeOrder() {
+      closeLayer($("#orderBack"));
     }
 
     function completeOrder(event) {
       event.preventDefault();
       if (ui.busy) return;
-      const data = checkoutData();
-      const errors = validateCheckoutStep(data, "all", todayIso());
-      if (Object.keys(errors).length) {
-        const firstStep = errors.name || errors.phone
-          ? 1
-          : (errors.address || errors.deliveryDate || errors.deliveryTime ? 2 : 3);
-        setCheckoutStep(firstStep);
-        showStepErrors(firstStep, errors);
-        return;
-      }
-      if (!$("#orderConsent").checked) {
-        $("#consentError").textContent = "Sifarişi təsdiqləmək üçün bu xananı işarələyin.";
-        return;
-      }
       const cart = loadCart();
+      if (!cart.length) {
+        closeOrder();
+        showToast("Səbət boşdur. Əvvəlcə məhsul əlavə edin.", "error");
+        return;
+      }
+      const data = orderData();
+      const errors = validateSimpleOrder(data);
+      if (Object.keys(errors).length) {
+        showOrderErrors(errors);
+        return;
+      }
+      clearOrderErrors();
       const result = calculateFinalTotal(cart);
+      const message = buildWhatsAppOrderText(data, result.lines, result.total);
+      const whatsappUrl = "https://wa.me/" + ORDER_CONFIG.whatsappPhone +
+        "?text=" + encodeURIComponent(message);
       ui.busy = true;
-      $("#completeOrder").disabled = true;
-      $("#completeOrder").textContent = "Hazırlanır...";
-      const message = buildWhatsAppOrderText(data, result.lines, result.total, ORDER_CONFIG.deliveryFee);
+      $("#continueWhatsApp").disabled = true;
+      $("#continueWhatsApp").textContent = "Hazırlanır...";
       saveDetailedHistory(cart, result.total, data);
-      window.open("https://wa.me/" + WHATSAPP_PHONE + "?text=" + encodeURIComponent(message), "_blank", "noopener");
+      window.open(whatsappUrl, "_blank", "noopener");
       saveCart([]);
-      appliedPromo = null;
       renderHistory();
       setTimeout(() => {
         ui.busy = false;
-        $("#completeOrder").disabled = false;
-        $("#completeOrder").textContent = "Sifarişi təsdiqlə və WhatsApp-a keç";
-        $("#checkoutForm").reset();
-        syncPaymentPanel();
-        closeCheckout();
-        showToast("Sifariş hazırlandı və WhatsApp açıldı.");
-      }, 250);
+        $("#continueWhatsApp").disabled = false;
+        $("#continueWhatsApp").textContent = "Davam et";
+        $("#orderForm").reset();
+        closeOrder();
+        showToast("Sifariş mətni WhatsApp-da hazırlandı.");
+      }, 200);
     }
-
     function showCampaignModal() {
       if (!CAMPAIGN_CONFIG.active || $("#campaignBack")) return;
       const back = document.createElement("div");
@@ -852,46 +692,32 @@ if (typeof document !== "undefined") {
           removeCartItem(button, button.dataset.key);
         }
       };
-      $("#promoBtn").onclick = applyPromo;
-      $("#promoInput").onkeydown = event => {
-        if (event.key === "Enter") {
-          event.preventDefault();
-          applyPromo();
-        }
-      };
-      $("#cartCheckout").onclick = openCheckout;
-      $("#checkoutClose").onclick = () => {
-        closeCheckout();
-        openCart();
+      $("#cartCheckout").onclick = openOrder;
+      $("#orderClose").onclick = closeOrder;
+      $("#orderBack").onclick = event => {
+        if (event.target === $("#orderBack")) closeOrder();
       };
       $("#customerPhone").oninput = event => {
         event.target.value = formatAzPhone(event.target.value);
       };
-      $("#stepBack").onclick = () => setCheckoutStep(ui.step - 1);
-      $("#stepNext").onclick = () => {
-        const errors = validateCheckoutStep(checkoutData(), ui.step, todayIso());
-        if (Object.keys(errors).length) {
-          showStepErrors(ui.step, errors);
-          return;
-        }
-        clearFieldErrors(ui.step);
-        setCheckoutStep(ui.step + 1);
-      };
-      $$('#checkoutForm [name="paymentMethod"]').forEach(input => {
-        input.onchange = syncPaymentPanel;
+      $("#orderForm").onsubmit = completeOrder;
+      $$("#orderForm input").forEach(input => {
+        input.addEventListener("input", () => {
+          input.closest(".field")?.classList.remove("invalid");
+          const error = input.closest(".field")?.querySelector(".field-error");
+          if (error) error.textContent = "";
+        });
       });
-      $("#copyCardNumber").onclick = copyCardNumber;
-      $("#checkoutForm").onsubmit = completeOrder;
-      $("#orderConsent").onchange = () => {
-        if ($("#orderConsent").checked) $("#consentError").textContent = "";
-      };
+      $$('#orderForm [name="paymentMethod"]').forEach(input => {
+        input.onchange = () => { $("#paymentError").textContent = ""; };
+      });
       document.addEventListener("keydown", event => {
-        const active = $(".campaign-back.show") || $(".checkout-page.show") ||
+        const active = $(".campaign-back.show") || $("#orderBack.show") ||
           $(".overlay.show") || $(".drawer-backdrop.show");
         if (!active) return;
         if (event.key === "Escape") {
           if (active.id === "campaignBack") active.querySelector(".campaign-close").click();
-          else if (active.id === "checkoutPage") closeCheckout();
+          else if (active.id === "orderBack") closeOrder();
           else if (active.id === "modalBack") closeProductModal();
           else closeCart();
         } else {
@@ -903,10 +729,12 @@ if (typeof document !== "undefined") {
     function initialize() {
       setupNavigation();
       setupEvents();
+      $$('[data-whatsapp-link]').forEach(link => {
+        link.href = "https://wa.me/" + ORDER_CONFIG.whatsappPhone;
+      });
       updateCartCountUI();
       renderCatalog();
       renderHistory();
-      syncPaymentPanel();
       const hidePreloader = () => {
         const loader = $("#preloader");
         if (!loader.classList.contains("fade-out")) {
@@ -929,12 +757,9 @@ if (typeof module !== "undefined" && module.exports) {
     campaignPrice,
     resolveUnitPrice,
     summarizeCampaignCart,
-    deliveryText,
-    todayIso,
     formatAzPhone,
     isValidAzPhone,
-    validateCheckoutStep,
-    formatOrderDate,
+    validateSimpleOrder,
     buildWhatsAppOrderText
   };
 }
