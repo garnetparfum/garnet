@@ -124,7 +124,7 @@
 
     <section class="contact section-shell" id="contact" aria-labelledby="contactTitle">
       <div><p class="eyebrow">ƏLAQƏ</p><h2 id="contactTitle">Sizə kömək edək</h2><p>Ətir seçimi və sifarişlə bağlı suallarınızı WhatsApp vasitəsilə cavablandıraq.</p></div>
-      <a class="button button-light" href="https://wa.me/994517238896" target="_blank" rel="noopener">WhatsApp-da yazın</a>
+      <a class="button button-light" href="#" data-whatsapp-link target="_blank" rel="noopener">WhatsApp-da yazın</a>
     </section>
   </main>
 
@@ -134,9 +134,8 @@
     <section class="product-modal" role="dialog" aria-modal="true" aria-labelledby="mName">
       <button class="icon-close" id="x" type="button" aria-label="Məhsul pəncərəsini bağla">×</button>
       <div class="product-modal-grid">
-        <div class="product-modal-media"><img id="mImg" src="" alt=""><span class="media-badge" id="mCat"></span></div>
+        <div class="product-modal-media"><img id="mImg" src="" alt=""></div>
         <div class="product-modal-content">
-          <p class="eyebrow">GARNET KOLLEKSİYASI</p>
           <h2 id="mName"></h2>
           <p class="modal-notes" id="mNotes"></p>
 
@@ -157,10 +156,10 @@
             </div>
           </fieldset>
 
-          <div class="modal-price-card" id="mPrice" aria-live="polite">Ölkə və həcm seçin</div>
-          <p class="minimum-note">Kampaniya qiyməti səbətdə minimum 2 məhsul olduqda tətbiq edilir.</p>
+          <div class="modal-price-card" id="mPrice" aria-live="polite"></div>
+          <p class="minimum-note">Kampaniya qiyməti minimum 2 məhsula aiddir</p>
+          <p class="disabled-reason" id="mAddHint">Ölkə və həcmi seçin</p>
           <button class="button button-primary add-to-cart" id="mCopy" type="button" disabled>Səbətə əlavə et</button>
-          <p class="disabled-reason" id="mAddHint">Davam etmək üçün istehsal ölkəsi və həcmi seçin.</p>
         </div>
       </div>
     </section>
@@ -171,15 +170,8 @@
       <header class="drawer-header"><div><p class="eyebrow">SEÇİMLƏRİNİZ</p><h2 id="cartTitle">Səbət</h2></div><button class="icon-close" id="cartX" type="button" aria-label="Səbəti bağla">×</button></header>
       <div class="cart-items" id="cartItems"></div>
       <div class="cart-footer">
-        <div class="promo-box">
-          <label for="promoInput">Promokod</label>
-          <div><input id="promoInput" type="text" placeholder="Kodu daxil edin"><button id="promoBtn" type="button">Tətbiq et</button></div>
-          <p id="promoStatus" aria-live="polite"></p>
-        </div>
         <div id="bundleInfo" class="campaign-status" aria-live="polite"></div>
         <dl class="cart-totals">
-          <div><dt>Aralıq cəm</dt><dd id="cartSubtotal">0 AZN</dd></div>
-          <div><dt>Endirim</dt><dd id="cartDiscount">− 0 AZN</dd></div>
           <div class="grand-total"><dt>Yekun məbləğ</dt><dd id="cartTotal">0 AZN</dd></div>
         </dl>
         <button class="button button-primary checkout-trigger" id="cartCheckout" type="button">Sifarişi rəsmiləşdir</button>
@@ -187,89 +179,27 @@
     </aside>
   </div>
 
-  <section class="checkout-page" id="checkoutPage" aria-hidden="true" aria-labelledby="checkoutTitle">
-    <header class="checkout-header">
-      <button class="checkout-close" id="checkoutClose" type="button" aria-label="Sifariş səhifəsini bağla">← Səbətə qayıt</button>
-      <a class="brand" href="#home"><span class="brand-mark">G</span><span><strong>Garnet Parfum</strong><small>Təhlükəsiz sifariş</small></span></a>
-    </header>
-    <div class="checkout-shell">
-      <div class="checkout-main">
-        <p class="eyebrow">SİFARİŞİN RƏSMİLƏŞDİRİLMƏSİ</p>
-        <h1 id="checkoutTitle">Sifarişinizi tamamlayın</h1>
-        <ol class="checkout-steps" id="checkoutSteps">
-          <li class="active" data-step-indicator="1"><span>1</span>Əlaqə</li>
-          <li data-step-indicator="2"><span>2</span>Çatdırılma</li>
-          <li data-step-indicator="3"><span>3</span>Ödəniş</li>
-          <li data-step-indicator="4"><span>4</span>Təsdiq</li>
-        </ol>
-
-        <form id="checkoutForm" novalidate>
-          <section class="checkout-step active" data-step="1">
-            <h2>Əlaqə məlumatları</h2>
-            <div class="field-grid">
-              <label class="field"><span>Ad və soyad</span><input id="customerName" name="name" autocomplete="name" placeholder="Məsələn, Fatimə Məmmədova" required><small class="field-error"></small></label>
-              <label class="field"><span>Əlaqə nömrəsi</span><input id="customerPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+994 50 000 00 00" required><small class="field-error"></small></label>
-            </div>
-          </section>
-
-          <section class="checkout-step" data-step="2">
-            <h2>Çatdırılma məlumatları</h2>
-            <label class="field"><span>Çatdırılma ünvanı</span><input id="deliveryAddress" name="address" autocomplete="street-address" placeholder="Şəhər, küçə, bina və mənzil" required><small class="field-error"></small></label>
-            <div class="field-grid">
-              <label class="field"><span>Çatdırılma tarixi</span><input id="deliveryDate" name="deliveryDate" type="date" required><small class="field-error"></small></label>
-              <label class="field"><span>Çatdırılma vaxtı</span><select id="deliveryTime" name="deliveryTime" required><option value="">Vaxt seçin</option><option>10:00–13:00</option><option>13:00–17:00</option><option>17:00–21:00</option></select><small class="field-error"></small></label>
-            </div>
-            <label class="field"><span>Müştəri qeydi <em>(istəyə bağlı)</em></span><textarea id="customerNote" name="note" rows="3" placeholder="Sifarişlə bağlı əlavə qeydiniz"></textarea><small class="field-error"></small></label>
-          </section>
-
-          <section class="checkout-step" data-step="3">
-            <h2>Ödəniş üsulu</h2>
-            <div class="payment-options">
-              <label class="payment-choice"><input type="radio" name="paymentMethod" value="Kartla" required><span><b>Kartla ödəniş</b><small>Şirkət kartına köçürmə</small></span></label>
-              <label class="payment-choice"><input type="radio" name="paymentMethod" value="Nağd" required><span><b>Nağd ödəniş</b><small>Çatdırılma zamanı kuryerə</small></span></label>
-            </div>
-            <div id="paymentError" class="form-alert" aria-live="polite"></div>
-            <div id="cardPaymentPanel" class="payment-panel hidden">
-              <p class="payment-kicker">KARTLA ÖDƏNİŞ</p>
-              <div id="cardUnavailable" class="secure-notice">
-                <b>Kart rekvizitləri təhlükəsiz şəkildə təqdim edilir</b>
-                <p>Tam kart məlumatı açıq sayt kodunda saxlanmır. Sifarişi təsdiqlədikdən sonra rekvizitləri WhatsApp vasitəsilə əldə edə bilərsiniz.</p>
-              </div>
-              <dl id="cardDetails" class="card-details hidden">
-                <div><dt>Kart sahibi</dt><dd id="cardHolder"></dd></div>
-                <div><dt>Bank</dt><dd id="cardBank"></dd></div>
-                <div><dt>Kart nömrəsi</dt><dd><code id="cardNumber"></code><button type="button" id="copyCardNumber">Kopyala</button></dd></div>
-              </dl>
-              <div class="payment-amount"><span>Ödəniləcək məbləğ</span><strong id="paymentAmount">0 AZN</strong></div>
-            </div>
-            <div id="cashPaymentPanel" class="payment-panel cash-panel hidden"><b>Nağd ödəniş</b><p>Ödənişi sifariş çatdırıldığı zaman kuryerə edəcəksiniz.</p></div>
-          </section>
-
-          <section class="checkout-step" data-step="4">
-            <h2>Sifarişi yoxlayın</h2>
-            <div id="reviewCustomer" class="review-block"></div>
-            <div id="reviewItems" class="review-items"></div>
-            <label class="consent"><input id="orderConsent" type="checkbox" required><span>Məlumatların düzgün olduğunu təsdiq edirəm.</span></label>
-            <small class="field-error" id="consentError"></small>
-          </section>
-
-          <div class="checkout-actions">
-            <button class="button button-secondary hidden" id="stepBack" type="button">Geri</button>
-            <button class="button button-primary" id="stepNext" type="button">Davam et</button>
-            <button class="button button-primary hidden" id="completeOrder" type="submit">Sifarişi təsdiqlə və WhatsApp-a keç</button>
-          </div>
-        </form>
-      </div>
-      <aside class="checkout-summary" aria-label="Sifariş xülasəsi">
-        <h2>Sifariş xülasəsi</h2>
-        <div id="checkoutSummaryItems"></div>
-        <dl><div><dt>Məhsulların cəmi</dt><dd id="checkoutSubtotal">0 AZN</dd></div><div><dt>Çatdırılma</dt><dd id="checkoutDelivery">ayrıca</dd></div><div class="grand-total"><dt>Ümumi məbləğ</dt><dd id="checkoutTotal">0 AZN</dd></div></dl>
-      </aside>
-    </div>
-  </section>
+  <div class="overlay order-back" id="orderBack" aria-hidden="true">
+    <section class="simple-order-modal" role="dialog" aria-modal="true" aria-labelledby="orderTitle">
+      <button class="icon-close" id="orderClose" type="button" aria-label="Sifariş pəncərəsini bağla">×</button>
+      <h2 id="orderTitle">Sifarişi tamamla</h2>
+      <p class="order-intro">Məlumatları daxil edin, sifarişiniz WhatsApp-da hazır şəkildə açılsın.</p>
+      <form id="orderForm" novalidate>
+        <label class="field"><span>Ad</span><input id="customerName" name="name" autocomplete="name" placeholder="Adınız" required><small class="field-error"></small></label>
+        <label class="field"><span>Telefon nömrəsi</span><input id="customerPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+994 50 000 00 00" required><small class="field-error"></small></label>
+        <label class="field"><span>Çatdırılma ünvanı</span><input id="deliveryAddress" name="address" autocomplete="street-address" placeholder="Şəhər, küçə, bina və mənzil" required><small class="field-error"></small></label>
+        <fieldset class="order-payment"><legend>Ödəniş üsulu</legend><div class="payment-options">
+          <label class="payment-choice"><input type="radio" name="paymentMethod" value="Kartla" required><span>Kartla</span></label>
+          <label class="payment-choice"><input type="radio" name="paymentMethod" value="Nağd" required><span>Nağd</span></label>
+        </div><small id="paymentError" class="field-error" aria-live="polite"></small></fieldset>
+        <div class="order-total"><span>Yekun məbləğ</span><strong id="orderTotal">0 AZN</strong></div>
+        <button class="button button-primary" id="continueWhatsApp" type="submit">Davam et</button>
+      </form>
+    </section>
+  </div>
 
   <div class="toast-region" id="toastRegion" aria-live="polite" aria-atomic="true"></div>
-  <a href="https://wa.me/994517238896" target="_blank" rel="noopener" class="floating-wa" aria-label="WhatsApp-da bizə yazın">WA</a>
+  <a href="#" data-whatsapp-link target="_blank" rel="noopener" class="floating-wa" aria-label="WhatsApp-da bizə yazın">WA</a>
 
   <script src="app.js"></script>
   <script src="premium.js"></script>
