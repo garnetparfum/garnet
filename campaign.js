@@ -10,6 +10,50 @@ const CAMPAIGN_CONFIG = Object.freeze({
   })
 });
 
+const ORDER_CONFIG = Object.freeze({
+  cardLastFour: "0986",
+  deliveryFee: null
+});
+
+function maskedCardNumber(lastFour = ORDER_CONFIG.cardLastFour) {
+  return `•••• •••• •••• ${String(lastFour).slice(-4)}`;
+}
+
+function deliveryText(fee = ORDER_CONFIG.deliveryFee) {
+  return fee === null || fee === undefined || fee === ""
+    ? "Çatdırılma: ayrıca"
+    : `Çatdırılma: ${Number(fee)} AZN`;
+}
+
+function validateOrderFormData(data, todayIso) {
+  const errors = [];
+  if (!String(data.name || "").trim()) errors.push("Ad");
+  if (!String(data.phone || "").trim()) errors.push("Əlaqə nömrəsi");
+  if (!data.deliveryTime) errors.push("Çatdırılma vaxtı");
+  if (!data.paymentMethod) errors.push("Ödəniş üsulu");
+  if (data.deliveryTime === "Başqa tarix") {
+    if (!data.deliveryDate) errors.push("Çatdırılma tarixi");
+    else if (data.deliveryDate < todayIso) errors.push("Keçmiş tarix seçilə bilməz");
+  }
+  return errors;
+}
+
+function formatSelectedDeliveryTime(data) {
+  if (data.deliveryTime !== "Başqa tarix") return data.deliveryTime;
+  const [year, month, day] = data.deliveryDate.split("-");
+  return `${day}.${month}.${year}`;
+}
+
+function buildWhatsAppOrderText(data, pricedLines, productsTotal, deliveryFee = ORDER_CONFIG.deliveryFee) {
+  const productLines = pricedLines.map(item => {
+    const quantity = Number(item.qty || 1);
+    const quantitySuffix = quantity > 1 ? ` × ${quantity}` : "";
+    return `${item.brand} ${item.name} — ${item.country}, ${item.size} ml — ${item.unitPrice} AZN${quantitySuffix}`;
+  }).join("\n");
+  const paymentLine = data.paymentMethod === "Nağd" ? "Nağd — kuryerə" : "Kartla ödəniş";
+  return `${String(data.name).trim()}\n${String(data.phone).trim()}\n${formatSelectedDeliveryTime(data)}\n\n${productLines}\n\nÜmumi ödəniş: ${Math.round(productsTotal)} AZN\n${deliveryText(deliveryFee)}\n${paymentLine}`;
+}
+
 function campaignPrice(country, size) {
   return CAMPAIGN_CONFIG.prices[country]?.[Number(size)] ?? null;
 }
@@ -43,6 +87,7 @@ function summarizeCampaignCart(cart, promoCode = null, metroPrices = {}) {
 }
 
 if (typeof window !== "undefined") window.CAMPAIGN_CONFIG = CAMPAIGN_CONFIG;
+if (typeof window !== "undefined") window.ORDER_CONFIG = ORDER_CONFIG;
 
 if (typeof document !== "undefined") {
   (() => {
@@ -63,7 +108,9 @@ if (typeof document !== "undefined") {
         .map(item => ({
           ...item,
           country: item.country || CAMPAIGN_CONFIG.defaultCountry,
-          normalPrice: normalUnitPrice(item)
+          normalPrice: normalUnitPrice(item),
+          delivery: null,
+          metro: null
         }));
     }
 
@@ -165,9 +212,6 @@ if (typeof document !== "undefined") {
       $("#mNotes").textContent = current.notes;
       pick = { size: null, country: null, delivery: null, metro: null };
       $$(".optBtn").forEach(button => button.classList.remove("active"));
-      $("#metroStation").value = "";
-      $("#mDeliveryWrap").classList.add("hidden");
-      $("#metroSelectWrap").classList.add("hidden");
       updateModalPrice();
       $("#modalBack").classList.add("show");
       document.body.style.overflow = "hidden";
@@ -191,7 +235,6 @@ if (typeof document !== "undefined") {
             <strong>${item.brand} — ${item.name}</strong>
             <span>${item.country} istehsalı • ${item.size} ml</span>
             <span>${item.qty} ədəd × ${money(item.unitPrice)} = <b>${money(item.lineTotal)}</b></span>
-            ${item.metro ? `<small>Metro: ${item.metro} (+${money((METRO_PRICES[item.metro] || 0) * item.qty)})</small>` : `<small>Çatdırılma: ${item.delivery}</small>`}
           </div>
           <div class="cart-qty-controls">
             <button class="btn ghost" onclick="updateQty('${item.key}', -1)">−</button>
@@ -239,30 +282,114 @@ if (typeof document !== "undefined") {
       document.addEventListener("keydown", event => { if (event.key === "Escape" && document.body.contains(back)) close(); }, { once: true });
     }
 
-    function whatsappOrder() {
+    function todayIso() {
+      const now = new Date();
+      const offset = now.getTimezoneOffset();
+      return new Date(now.getTime() - offset * 60000).toISOString().slice(0, 10);
+    }
+
+    function closeOrderForm() {
+      $("#orderFormBack")?.remove();
+      if (!$("#campaignBack") && !$("#modalBack").classList.contains("show") && !$("#cartBack").classList.contains("show")) {
+        document.body.style.overflow = "auto";
+      }
+    }
+
+    function openOrderForm() {
       const cart = loadCart();
-      if (!cart.length) return;
-      const result = calculateFinalTotal(cart);
-      saveToHistory(cart, result.total);
-      const lines = result.lines.map(item => [
-        `• ${item.brand} — ${item.name}`,
-        `  İstehsal: ${item.country}`,
-        `  Həcm: ${item.size} ml`,
-        `  Say: ${item.qty} ədəd`,
-        `  Bir ədəd: ${money(item.unitPrice)}`,
-        `  Məhsul üzrə cəmi: ${money(item.lineTotal)}`,
-        item.metro ? `  Metro: ${item.metro} (+${money((METRO_PRICES[item.metro] || 0) * item.qty)})` : `  Çatdırılma: ${item.delivery}`
-      ].join("\n")).join("\n\n");
-      const campaignLine = result.campaignApplied ? "\n✅ Kampaniya qiymətləri tətbiq edildi.\n" : "\n";
-      const message = `Salam Garnet Parfum! Sifariş:\n\n${lines}${campaignLine}\nYekun məbləğ: ${money(result.total)}`;
-      window.open(`https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(message)}`);
-      saveCart([]);
-      $("#cartBack").classList.remove("show");
+      if (!cart.length || $("#orderFormBack")) return;
+      const back = document.createElement("div");
+      back.id = "orderFormBack";
+      back.className = "order-form-back";
+      back.innerHTML = `
+        <section class="order-form-modal" role="dialog" aria-modal="true" aria-labelledby="orderFormTitle">
+          <button type="button" class="order-form-close" aria-label="Bağla">✕</button>
+          <h2 id="orderFormTitle">Sifarişi tamamla</h2>
+          <form id="orderForm" novalidate>
+            <label>Ad<input id="customerName" name="name" autocomplete="name" required></label>
+            <label>Əlaqə nömrəsi<input id="customerPhone" name="phone" type="tel" autocomplete="tel" required></label>
+            <label>Çatdırılma vaxtı
+              <select id="deliveryTime" name="deliveryTime" required>
+                <option value="">Seçin</option>
+                <option>Bu gün</option>
+                <option>Sabah</option>
+                <option>Başqa tarix</option>
+              </select>
+            </label>
+            <label id="deliveryDateWrap" class="hidden">Tarix
+              <input id="deliveryDate" name="deliveryDate" type="date" min="${todayIso()}">
+            </label>
+            <fieldset>
+              <legend>Ödəniş üsulu</legend>
+              <label class="choice"><input type="radio" name="paymentMethod" value="Kartla" required> Kartla</label>
+              <label class="choice"><input type="radio" name="paymentMethod" value="Nağd" required> Nağd</label>
+            </fieldset>
+            <div id="cardPaymentBox" class="card-payment-box hidden">
+              <div class="card-payment-meta">
+                <small>KARTLA ÖDƏNİŞ</small>
+                <strong class="card-number-mask">${maskedCardNumber()}</strong>
+                <span>Tam kart məlumatı WhatsApp vasitəsilə təqdim ediləcək.</span>
+              </div>
+              <button type="button" id="requestCardDetails">Kart məlumatını WhatsApp-da al</button>
+            </div>
+            <div id="orderFormError" class="order-form-error" aria-live="polite"></div>
+            <button class="btn primary order-submit" type="submit">Sifarişi tamamla</button>
+          </form>
+        </section>`;
+      document.body.appendChild(back);
+      document.body.style.overflow = "hidden";
+      const form = $("#orderForm");
+      const dateWrap = $("#deliveryDateWrap");
+      const dateInput = $("#deliveryDate");
+      const cardBox = $("#cardPaymentBox");
+
+      $("#deliveryTime").onchange = event => {
+        const custom = event.target.value === "Başqa tarix";
+        dateWrap.classList.toggle("hidden", !custom);
+        dateInput.required = custom;
+        if (!custom) dateInput.value = "";
+      };
+      form.querySelectorAll('[name="paymentMethod"]').forEach(input => {
+        input.onchange = () => cardBox.classList.toggle("hidden", input.value !== "Kartla" || !input.checked);
+      });
+      $("#requestCardDetails").onclick = () => {
+        const requestText = "Salam, kartla ödəniş üçün kart məlumatlarını göndərin.";
+        window.open(`https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(requestText)}`);
+      };
+      back.querySelector(".order-form-close").onclick = closeOrderForm;
+      back.onclick = event => { if (event.target === back) closeOrderForm(); };
+
+      form.onsubmit = event => {
+        event.preventDefault();
+        const payment = form.querySelector('[name="paymentMethod"]:checked')?.value || "";
+        const data = {
+          name: $("#customerName").value,
+          phone: $("#customerPhone").value,
+          deliveryTime: $("#deliveryTime").value,
+          deliveryDate: dateInput.value,
+          paymentMethod: payment
+        };
+        const errors = validateOrderFormData(data, todayIso());
+        if (errors.length) {
+          $("#orderFormError").textContent = errors[0] === "Keçmiş tarix seçilə bilməz"
+            ? errors[0]
+            : `Zəhmət olmasa doldurun: ${errors.join(", ")}`;
+          return;
+        }
+        const result = calculateFinalTotal(loadCart());
+        const message = buildWhatsAppOrderText(data, result.lines, result.total, ORDER_CONFIG.deliveryFee);
+        saveToHistory(loadCart(), result.total);
+        window.open(`https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(message)}`);
+        saveCart([]);
+        $("#cartBack").classList.remove("show");
+        closeOrderForm();
+      };
     }
 
     document.addEventListener("DOMContentLoaded", () => {
       ensureCountryPicker();
       configureSizes();
+      $("#mDeliveryWrap")?.remove();
       saveCart(loadCart());
       render();
 
@@ -273,7 +400,6 @@ if (typeof document !== "undefined") {
         button.classList.add("active");
         pick.country = button.dataset.country;
         updateModalPrice();
-        if (pick.size) $("#mDeliveryWrap").classList.remove("hidden");
       };
 
       $("#mSizes").onclick = event => {
@@ -284,16 +410,13 @@ if (typeof document !== "undefined") {
         pick.size = button.dataset.size;
         $("#mSizeLabel").textContent = `${pick.size} ml`;
         updateModalPrice();
-        if (pick.country) $("#mDeliveryWrap").classList.remove("hidden");
       };
 
       $("#mCopy").onclick = () => {
-        if (!pick.country || !pick.size || !pick.delivery) return alert("İstehsal ölkəsi, həcm və çatdırılmanı seçin.");
-        if (pick.delivery === "Metro" && !$("#metroStation").value) return alert("Zəhmət olmasa metronu seçin.");
+        if (!pick.country || !pick.size) return alert("İstehsal ölkəsi və həcmi seçin.");
         let cart = loadCart();
-        const metro = pick.delivery === "Metro" ? $("#metroStation").value : null;
         const normalPrice = priceBySize(current.price20, pick.size);
-        const key = `${current.id}_${pick.country}_${pick.size}_${pick.delivery}_${metro || ""}`;
+        const key = `${current.id}_${pick.country}_${pick.size}`;
         const found = cart.find(item => item.key === key);
         if (found) found.qty += 1;
         else cart.push({
@@ -304,8 +427,6 @@ if (typeof document !== "undefined") {
           img: current.img,
           country: pick.country,
           size: Number(pick.size),
-          delivery: pick.delivery,
-          metro,
           normalPrice,
           price: normalPrice,
           qty: 1
@@ -315,7 +436,8 @@ if (typeof document !== "undefined") {
         closeModal();
       };
 
-      $("#cartCheckout").onclick = whatsappOrder;
+      $("#cartCheckout").textContent = "Sifariş et";
+      $("#cartCheckout").onclick = openOrderForm;
 
       let modalShown = false;
       const showAfterPreloader = () => {
@@ -330,5 +452,16 @@ if (typeof document !== "undefined") {
 }
 
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { CAMPAIGN_CONFIG, campaignPrice, resolveUnitPrice, summarizeCampaignCart };
+  module.exports = {
+    CAMPAIGN_CONFIG,
+    ORDER_CONFIG,
+    campaignPrice,
+    resolveUnitPrice,
+    summarizeCampaignCart,
+    maskedCardNumber,
+    deliveryText,
+    validateOrderFormData,
+    formatSelectedDeliveryTime,
+    buildWhatsAppOrderText
+  };
 }
