@@ -1,159 +1,277 @@
 <!doctype html>
 <html lang="az">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#4b1024">
   <title>Garnet Parfum | Premium Ətirlər</title>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="campaign.css" />
+  <meta name="description" content="Garnet Parfum — seçilmiş premium ətirlər, şəffaf qiymətlər və rahat sifariş.">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="campaign.css">
 </head>
 <body>
+  <a class="skip-link" href="#catalog">Kataloqa keç</a>
 
-  <div id="preloader">
+  <div id="preloader" aria-hidden="true">
     <div class="preloader-content">
-      <div class="loader-logo">GARNET</div>
+      <div class="loader-monogram">G</div>
+      <div class="loader-logo">GARNET PARFUM</div>
       <div class="loader-bar"><div class="loader-progress"></div></div>
-      <div class="loader-text">Zəriflik yüklənir...</div>
+      <div class="loader-text">Zəriflik hazırlanır</div>
     </div>
   </div>
 
-  <header class="nav">
-    <div class="navLeft">
-      <div class="logo">
-        <div class="logoMark"></div>
-        <div>
-          <div class="logoName">Garnet Parfum</div>
-          <div class="logoSub">Premium ətirlər • 2026</div>
-        </div>
-      </div>
-    </div>
-    <div class="navRight">
-      <button class="btn ghost" id="btnCart">🛒 Səbət <span id="cartCount">(0)</span></button>
-      <button class="btn primary" onclick="document.getElementById('catalog').scrollIntoView({behavior:'smooth'})">Kataloq</button>
+  <header class="site-header" id="siteHeader">
+    <div class="header-inner">
+      <a class="brand" href="#home" aria-label="Garnet Parfum ana səhifə">
+        <span class="brand-mark" aria-hidden="true">G</span>
+        <span><strong>Garnet Parfum</strong><small>Premium ətir evi</small></span>
+      </a>
+
+      <button class="menu-toggle" id="menuToggle" type="button" aria-label="Menyunu aç" aria-expanded="false" aria-controls="mainNav">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav class="main-nav" id="mainNav" aria-label="Əsas menyu">
+        <a href="#home" class="active">Ana səhifə</a>
+        <a href="#catalog">Kataloq</a>
+        <a href="#about">Haqqımızda</a>
+        <a href="#contact">Əlaqə</a>
+      </nav>
+
+      <button class="cart-button" id="btnCart" type="button" aria-label="Səbəti aç">
+        <span class="cart-icon" aria-hidden="true">⌁</span>
+        <span>Səbət</span>
+        <span class="cart-count" id="cartCount">0</span>
+      </button>
     </div>
   </header>
 
-  <main class="wrap">
-    <section class="hero">
-      <div class="heroText">
-        <div class="badge">GARNET • PARFUM</div>
-        <h1>İmzan olan <span>qoxu</span> — seç.</h1>
-        <div class="genderPick" id="genderPick">
-          <div class="genderBtns">
-            <button class="gbtn active" data-gender="all">Hamısı</button>
-            <button class="gbtn" data-gender="male">Kişi</button>
-            <button class="gbtn" data-gender="female">Qadın</button>
-            <button class="gbtn" data-gender="unisex">Unisex</button>
+  <main>
+    <section class="hero" id="home">
+      <div class="hero-inner">
+        <div class="hero-copy">
+          <p class="eyebrow">GARNET PARFUM · BAKI</p>
+          <h1>Sizin imzanıza çevrilən <em>ətir.</em></h1>
+          <p>İsveçrə və Fransa istehsalı seçilmiş qoxular. Zərif təqdimat, aydın qiymət və rahat sifariş.</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#catalog">Ətirləri kəşf et</a>
+            <a class="button button-secondary" href="#about">Brend haqqında</a>
           </div>
+          <div class="hero-trust">
+            <span><b>01</b> Premium tərkib</span>
+            <span><b>02</b> Dəqiq seçim</span>
+            <span><b>03</b> Rahat sifariş</span>
+          </div>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <div class="bottle">
+            <span class="bottle-cap"></span>
+            <span class="bottle-label"><b>G</b><small>GARNET</small></span>
+          </div>
+          <span class="hero-orbit"></span>
         </div>
       </div>
     </section>
 
-    <section class="catalog" id="catalog">
-      <div class="catalogTop">
-        <h2>Kataloq</h2>
-        <div class="search"><input id="search" placeholder="Brend və ya ətir axtar..." /></div>
+    <section class="catalog section-shell" id="catalog" aria-labelledby="catalogTitle">
+      <div class="section-heading">
+        <div><p class="eyebrow">KOLLEKSİYA</p><h2 id="catalogTitle">Öz qoxunuzu seçin</h2></div>
+        <label class="search-box" for="search">
+          <span aria-hidden="true">⌕</span>
+          <input id="search" type="search" placeholder="Brend və ya ətir axtar..." autocomplete="off">
+        </label>
       </div>
-      <div class="chips" id="chips">
-        <button class="chip active" data-cat="all">Hamısı</button>
-        <button class="chip" data-cat="sweet">Şirin</button>
-        <button class="chip" data-cat="medium">Orta</button>
-        <button class="chip" data-cat="dark">Tünd</button>
-        <button class="chip" data-cat="fresh">Sərin</button>
-        <button class="chip" data-cat="woody">Odunsu</button>
+
+      <div class="filter-row" aria-label="Cins üzrə filtr" id="genderPick">
+        <button class="filter-btn active" type="button" data-gender="all">Hamısı</button>
+        <button class="filter-btn" type="button" data-gender="male">Kişi</button>
+        <button class="filter-btn" type="button" data-gender="female">Qadın</button>
+        <button class="filter-btn" type="button" data-gender="unisex">Unisex</button>
       </div>
-      <div class="grid" id="grid"></div>
+
+      <div class="filter-row filter-row-soft" aria-label="Qoxu ailəsi üzrə filtr" id="chips">
+        <button class="chip active" type="button" data-cat="all">Bütün notlar</button>
+        <button class="chip" type="button" data-cat="sweet">Şirin</button>
+        <button class="chip" type="button" data-cat="medium">Balanslı</button>
+        <button class="chip" type="button" data-cat="dark">Tünd</button>
+        <button class="chip" type="button" data-cat="fresh">Sərin</button>
+        <button class="chip" type="button" data-cat="woody">Odunsu</button>
+      </div>
+
+      <div class="catalog-meta"><span id="catalogCount">0 ətir</span><span>Seçiminizi ölkə və həcm üzrə fərdiləşdirin</span></div>
+      <div class="product-grid" id="grid" aria-live="polite"></div>
+    </section>
+
+    <section class="story section-shell" id="about" aria-labelledby="aboutTitle">
+      <div class="story-card">
+        <div><p class="eyebrow">HAQQIMIZDA</p><h2 id="aboutTitle">Xatirəyə çevrilən qoxular</h2></div>
+        <p>Garnet Parfum gündəlik zövqü premium parfümeriya mədəniyyəti ilə birləşdirir. Kolleksiyamız fərqli üslublar üçün seçilmiş ətir istiqamətlərini sadə və şəffaf seçim prosesi ilə təqdim edir.</p>
+      </div>
+      <div class="story-values">
+        <article><span>01</span><h3>Seçilmiş kolleksiya</h3><p>Şirin, tünd, sərin, odunsu və balanslı qoxular.</p></article>
+        <article><span>02</span><h3>Şəffaf seçim</h3><p>Ölkə, həcm və qiymət hər addımda aydın görünür.</p></article>
+        <article><span>03</span><h3>Şəxsi xidmət</h3><p>Sifarişdən sonra WhatsApp üzərindən operativ əlaqə.</p></article>
+      </div>
+    </section>
+
+    <section class="history-section section-shell" id="history" aria-labelledby="historyTitle">
+      <div class="section-heading">
+        <div><p class="eyebrow">HESABINIZ</p><h2 id="historyTitle">Sifariş tarixçəsi</h2></div>
+      </div>
+      <div id="historyItems" class="history-grid"></div>
+    </section>
+
+    <section class="contact section-shell" id="contact" aria-labelledby="contactTitle">
+      <div><p class="eyebrow">ƏLAQƏ</p><h2 id="contactTitle">Sizə kömək edək</h2><p>Ətir seçimi və sifarişlə bağlı suallarınızı WhatsApp vasitəsilə cavablandıraq.</p></div>
+      <a class="button button-light" href="https://wa.me/994517238896" target="_blank" rel="noopener">WhatsApp-da yazın</a>
     </section>
   </main>
 
-  <div class="modalBack" id="modalBack">
-    <div class="modal">
-      <button class="x" id="x">✕</button>
-      <div class="modalGrid">
-        <div class="mLeft"><img id="mImg" src="" /></div>
-        <div class="mRight">
-          <div class="tagRow"><span class="tag" id="mCat">Ətir</span><span class="tag outline" id="mSizeLabel">Seç</span></div>
-          <h3 id="mName">Ad</h3>
-          <div class="notes" id="mNotes">Notlar</div>
-          
-          <div class="optBlock">
-            <div class="optTitle">Həcm seç:</div>
-            <div class="optRow" id="mSizes">
-              <button class="optBtn" data-size="20">20ml</button>
-              <button class="optBtn" data-size="30">30ml</button>
-              <button class="optBtn" data-size="50">50ml</button>
-            </div>
-          </div>
+  <footer class="site-footer"><span>© 2026 Garnet Parfum</span><span>Zəriflik hər notda</span></footer>
 
-          <div class="optBlock hidden" id="mDeliveryWrap">
-            <div class="optTitle">Çatdırılma:</div>
-            <div class="optRow" id="mDelivery">
-              <button class="optBtn" data-delivery="Metro">Metro</button>
-              <button class="optBtn" data-delivery="Taksi">Taksi</button>
-              <button class="optBtn" data-delivery="Kargo">Kargo</button>
-            </div>
-            
-            <div id="metroSelectWrap" class="hidden" style="margin-top:10px;">
-              <select id="metroStation" style="width:100%; padding:10px; border-radius:10px; border:1px solid #ddd;">
-                <option value="">Stansiyanı seçin...</option>
-                <optgroup label="Qırmızı Xətt">
-                  <option>İçərişəhər</option><option>Sahil</option><option>28 May</option><option>Gənclik</option>
-                  <option>Nəriman Nərimanov</option><option>Ulduz</option><option>Koroğlu</option><option>Qara Qarayev</option>
-                  <option>Nefçilər</option><option>Xalqlar Dostluğu</option><option>Əhmədli</option><option>Həzi Aslanov</option>
-                </optgroup>
-                <optgroup label="Yaşıl Xətt">
-                  <option>Xətai</option><option>Cəfər Cabbarlı</option><option>Nizami</option><option>Elmlər Akademiyası</option>
-                  <option>İnşaatçılar</option><option>20 Yanvar</option><option>Memar Əcəmi</option><option>Nəsimi</option>
-                  <option>Azadlıq Prospekti</option><option>Dərnəgül</option>
-                </optgroup>
-                <optgroup label="Bənövşəyi Xətt">
-                  <option>8 Noyabr</option><option>Avtovağzal</option><option>Xocəsən</option>
-                </optgroup>
-              </select>
-            </div>
-          </div>
+  <div class="overlay" id="modalBack" aria-hidden="true">
+    <section class="product-modal" role="dialog" aria-modal="true" aria-labelledby="mName">
+      <button class="icon-close" id="x" type="button" aria-label="Məhsul pəncərəsini bağla">×</button>
+      <div class="product-modal-grid">
+        <div class="product-modal-media"><img id="mImg" src="" alt=""><span class="media-badge" id="mCat"></span></div>
+        <div class="product-modal-content">
+          <p class="eyebrow">GARNET KOLLEKSİYASI</p>
+          <h2 id="mName"></h2>
+          <p class="modal-notes" id="mNotes"></p>
 
-          <div class="priceRow"><div class="price" id="mPrice">0 AZN</div></div>
-          <div class="mBtns">
-            <button class="btn primary" style="width:100%" id="mCopy">Səbətə əlavə et</button>
-          </div>
+          <fieldset class="option-group">
+            <legend>İstehsal ölkəsi</legend>
+            <div class="option-row" id="mCountries">
+              <button class="option-btn" type="button" data-country="İsveçrə">İsveçrə</button>
+              <button class="option-btn" type="button" data-country="Fransa">Fransa</button>
+            </div>
+          </fieldset>
+
+          <fieldset class="option-group">
+            <legend>Həcm</legend>
+            <div class="option-row" id="mSizes">
+              <button class="option-btn" type="button" data-size="20">20 ml</button>
+              <button class="option-btn" type="button" data-size="30">30 ml</button>
+              <button class="option-btn" type="button" data-size="50">50 ml</button>
+            </div>
+          </fieldset>
+
+          <div class="modal-price-card" id="mPrice" aria-live="polite">Ölkə və həcm seçin</div>
+          <p class="minimum-note">Kampaniya qiyməti səbətdə minimum 2 məhsul olduqda tətbiq edilir.</p>
+          <button class="button button-primary add-to-cart" id="mCopy" type="button" disabled>Səbətə əlavə et</button>
+          <p class="disabled-reason" id="mAddHint">Davam etmək üçün istehsal ölkəsi və həcmi seçin.</p>
         </div>
       </div>
-    </div>
+    </section>
   </div>
 
-  <div class="modalBack" id="cartBack">
-    <div class="modal">
-      <button class="x" id="cartX">✕</button>
-      <div style="padding:20px;">
-        <div style="display:flex; gap:20px; border-bottom:1px solid #eee; margin-bottom:15px;">
-           <button id="tabCart" style="border:none; background:none; font-weight:900; padding:10px; cursor:pointer; color:#a0123d; border-bottom:2px solid #a0123d;">Səbət</button>
-           <button id="tabHistory" style="border:none; background:none; font-weight:900; padding:10px; cursor:pointer; color:#666;">Tarixçə</button>
+  <div class="drawer-backdrop" id="cartBack" aria-hidden="true">
+    <aside class="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="cartTitle">
+      <header class="drawer-header"><div><p class="eyebrow">SEÇİMLƏRİNİZ</p><h2 id="cartTitle">Səbət</h2></div><button class="icon-close" id="cartX" type="button" aria-label="Səbəti bağla">×</button></header>
+      <div class="cart-items" id="cartItems"></div>
+      <div class="cart-footer">
+        <div class="promo-box">
+          <label for="promoInput">Promokod</label>
+          <div><input id="promoInput" type="text" placeholder="Kodu daxil edin"><button id="promoBtn" type="button">Tətbiq et</button></div>
+          <p id="promoStatus" aria-live="polite"></p>
         </div>
-        <div id="cartSection">
-            <div id="cartItems"></div>
-            <div style="margin-top:15px; background:#f9f9f9; padding:10px; border-radius:10px; display:flex; gap:5px;">
-                <input type="text" id="promoInput" placeholder="Promokod" style="flex:1; padding:8px; border:1px solid #ddd; border-radius:5px;">
-                <button class="btn ghost" id="promoBtn" style="padding:8px;">Ok</button>
-            </div>
-            <div id="bundleInfo" style="margin-top:10px; font-size:11px; color:#27ae60; font-weight:700;"></div>
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px;">
-              <div style="font-weight:900;">Cəmi: <span id="cartTotal">0 AZN</span></div>
-              <button class="btn primary" id="cartCheckout">WhatsApp Sifariş</button>
-            </div>
-        </div>
-        <div id="historySection" class="hidden"><div id="historyItems"></div></div>
+        <div id="bundleInfo" class="campaign-status" aria-live="polite"></div>
+        <dl class="cart-totals">
+          <div><dt>Aralıq cəm</dt><dd id="cartSubtotal">0 AZN</dd></div>
+          <div><dt>Endirim</dt><dd id="cartDiscount">− 0 AZN</dd></div>
+          <div class="grand-total"><dt>Yekun məbləğ</dt><dd id="cartTotal">0 AZN</dd></div>
+        </dl>
+        <button class="button button-primary checkout-trigger" id="cartCheckout" type="button">Sifarişi rəsmiləşdir</button>
       </div>
-    </div>
+    </aside>
   </div>
 
-  <a href="https://wa.me/994517238896" target="_blank" class="floatingWA">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="25">
-    <span>Bizə yazın</span>
-  </a>
+  <section class="checkout-page" id="checkoutPage" aria-hidden="true" aria-labelledby="checkoutTitle">
+    <header class="checkout-header">
+      <button class="checkout-close" id="checkoutClose" type="button" aria-label="Sifariş səhifəsini bağla">← Səbətə qayıt</button>
+      <a class="brand" href="#home"><span class="brand-mark">G</span><span><strong>Garnet Parfum</strong><small>Təhlükəsiz sifariş</small></span></a>
+    </header>
+    <div class="checkout-shell">
+      <div class="checkout-main">
+        <p class="eyebrow">SİFARİŞİN RƏSMİLƏŞDİRİLMƏSİ</p>
+        <h1 id="checkoutTitle">Sifarişinizi tamamlayın</h1>
+        <ol class="checkout-steps" id="checkoutSteps">
+          <li class="active" data-step-indicator="1"><span>1</span>Əlaqə</li>
+          <li data-step-indicator="2"><span>2</span>Çatdırılma</li>
+          <li data-step-indicator="3"><span>3</span>Ödəniş</li>
+          <li data-step-indicator="4"><span>4</span>Təsdiq</li>
+        </ol>
 
-  <div id="orderPopup" class="orderPopup"></div>
+        <form id="checkoutForm" novalidate>
+          <section class="checkout-step active" data-step="1">
+            <h2>Əlaqə məlumatları</h2>
+            <div class="field-grid">
+              <label class="field"><span>Ad və soyad</span><input id="customerName" name="name" autocomplete="name" placeholder="Məsələn, Fatimə Məmmədova" required><small class="field-error"></small></label>
+              <label class="field"><span>Əlaqə nömrəsi</span><input id="customerPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+994 50 000 00 00" required><small class="field-error"></small></label>
+            </div>
+          </section>
+
+          <section class="checkout-step" data-step="2">
+            <h2>Çatdırılma məlumatları</h2>
+            <label class="field"><span>Çatdırılma ünvanı</span><input id="deliveryAddress" name="address" autocomplete="street-address" placeholder="Şəhər, küçə, bina və mənzil" required><small class="field-error"></small></label>
+            <div class="field-grid">
+              <label class="field"><span>Çatdırılma tarixi</span><input id="deliveryDate" name="deliveryDate" type="date" required><small class="field-error"></small></label>
+              <label class="field"><span>Çatdırılma vaxtı</span><select id="deliveryTime" name="deliveryTime" required><option value="">Vaxt seçin</option><option>10:00–13:00</option><option>13:00–17:00</option><option>17:00–21:00</option></select><small class="field-error"></small></label>
+            </div>
+            <label class="field"><span>Müştəri qeydi <em>(istəyə bağlı)</em></span><textarea id="customerNote" name="note" rows="3" placeholder="Sifarişlə bağlı əlavə qeydiniz"></textarea><small class="field-error"></small></label>
+          </section>
+
+          <section class="checkout-step" data-step="3">
+            <h2>Ödəniş üsulu</h2>
+            <div class="payment-options">
+              <label class="payment-choice"><input type="radio" name="paymentMethod" value="Kartla" required><span><b>Kartla ödəniş</b><small>Şirkət kartına köçürmə</small></span></label>
+              <label class="payment-choice"><input type="radio" name="paymentMethod" value="Nağd" required><span><b>Nağd ödəniş</b><small>Çatdırılma zamanı kuryerə</small></span></label>
+            </div>
+            <div id="paymentError" class="form-alert" aria-live="polite"></div>
+            <div id="cardPaymentPanel" class="payment-panel hidden">
+              <p class="payment-kicker">KARTLA ÖDƏNİŞ</p>
+              <div id="cardUnavailable" class="secure-notice">
+                <b>Kart rekvizitləri təhlükəsiz şəkildə təqdim edilir</b>
+                <p>Tam kart məlumatı açıq sayt kodunda saxlanmır. Sifarişi təsdiqlədikdən sonra rekvizitləri WhatsApp vasitəsilə əldə edə bilərsiniz.</p>
+              </div>
+              <dl id="cardDetails" class="card-details hidden">
+                <div><dt>Kart sahibi</dt><dd id="cardHolder"></dd></div>
+                <div><dt>Bank</dt><dd id="cardBank"></dd></div>
+                <div><dt>Kart nömrəsi</dt><dd><code id="cardNumber"></code><button type="button" id="copyCardNumber">Kopyala</button></dd></div>
+              </dl>
+              <div class="payment-amount"><span>Ödəniləcək məbləğ</span><strong id="paymentAmount">0 AZN</strong></div>
+            </div>
+            <div id="cashPaymentPanel" class="payment-panel cash-panel hidden"><b>Nağd ödəniş</b><p>Ödənişi sifariş çatdırıldığı zaman kuryerə edəcəksiniz.</p></div>
+          </section>
+
+          <section class="checkout-step" data-step="4">
+            <h2>Sifarişi yoxlayın</h2>
+            <div id="reviewCustomer" class="review-block"></div>
+            <div id="reviewItems" class="review-items"></div>
+            <label class="consent"><input id="orderConsent" type="checkbox" required><span>Məlumatların düzgün olduğunu təsdiq edirəm.</span></label>
+            <small class="field-error" id="consentError"></small>
+          </section>
+
+          <div class="checkout-actions">
+            <button class="button button-secondary hidden" id="stepBack" type="button">Geri</button>
+            <button class="button button-primary" id="stepNext" type="button">Davam et</button>
+            <button class="button button-primary hidden" id="completeOrder" type="submit">Sifarişi təsdiqlə və WhatsApp-a keç</button>
+          </div>
+        </form>
+      </div>
+      <aside class="checkout-summary" aria-label="Sifariş xülasəsi">
+        <h2>Sifariş xülasəsi</h2>
+        <div id="checkoutSummaryItems"></div>
+        <dl><div><dt>Məhsulların cəmi</dt><dd id="checkoutSubtotal">0 AZN</dd></div><div><dt>Çatdırılma</dt><dd id="checkoutDelivery">ayrıca</dd></div><div class="grand-total"><dt>Ümumi məbləğ</dt><dd id="checkoutTotal">0 AZN</dd></div></dl>
+      </aside>
+    </div>
+  </section>
+
+  <div class="toast-region" id="toastRegion" aria-live="polite" aria-atomic="true"></div>
+  <a href="https://wa.me/994517238896" target="_blank" rel="noopener" class="floating-wa" aria-label="WhatsApp-da bizə yazın">WA</a>
+
   <script src="app.js"></script>
-  <script src="campaign.js"></script>
+  <script src="premium.js"></script>
 </body>
 </html>
